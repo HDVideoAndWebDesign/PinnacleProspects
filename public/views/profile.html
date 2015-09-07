@@ -1,0 +1,119 @@
+<div class="row slick_form">
+	<div class="col-xs-12 col-md-7">
+		
+		<div class="row">
+			<div class="col-xs-3 col-md-4">
+				Image  
+			</div>
+			<div class="col-xs-9 col-md-8">
+				<p><strong class="subhead">{{ profile.name }}</strong></p>
+				<table>
+					<tr>
+						<td><strong>High School</strong></td><td><input ng-model="profile.high_school" size="{{ profile.high_school.length }}" ng-blur="updateProfile(profile)" placeholder="High School"></td>
+					</tr>
+					<tr>
+						<td><strong>College</strong></td><td><input ng-model="profile.college" size="{{ profile.college.length }}" ng-blur="updateProfile(profile)" placeholder="College"></td>
+					</tr>
+					<tr>
+						<td><strong>Club</strong></td><td><input ng-model="profile.club" size="{{ profile.club.length }}" ng-blur="updateProfile(profile)" placeholder="Club"></td>
+					</tr>
+					<tr>
+						<td><strong>Team</strong></td><td><input ng-model="profile.team" size="{{ profile.team.length }}" ng-blur="updateProfile(profile)" placeholder="Team"></td>
+					</tr>
+					<tr>
+						<td><strong>Home Town</strong></td><td><input ng-model="profile.home_town" size="{{ profile.home_town.length }}" ng-blur="updateProfile(profile)" placeholder="City, State"></td>
+					</tr>
+					<tr>
+						<td><strong>Graduation Year</strong></td><td><input ng-model="profile.grad_year" size="{{ profile.grad_year.length }}" ng-blur="updateProfile(profile)" placeholder="Expected Graduation Year"> </td>
+					</tr>
+					<tr>
+						<td><strong>Class</strong></td><td><input ng-model="profile.class" size="{{ profile.class.length }}" ng-blur="updateProfile(profile)" placeholder="Class"> </td>
+					</tr>
+					<tr>
+						<td><strong>Eligibility</strong></td><td><input ng-model="profile.eligibility" size="{{ profile.eligibility.length }}" ng-blur="updateProfile(profile)" placeholder="Eligibility"> </td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12" ng-if="profile.personal_bio">
+				<strong>Personal Bio</strong>
+				<p>{{ profile.personal_bio }}</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-5">
+		<p><strong class="subhead">Messages <span class="pull-right"><a><span class="glyphicon glyphicon-envelope"></span></a><span class="badge pull-right">{{ messages_count }}</span></span></strong>
+		</p>
+
+		<div class="memo_wrapper">
+			<div class="media" ng-repeat="message in messages">
+				<div class="media-body">
+					<div>
+						<a ng-show="message.date_seen == 0" ng-click="changeSeen(message.id, 'seen')">
+							<span class="glyphicon glyphicon-envelope"></span> <strong>From: {{ message.sender }}</strong>
+						</a>
+						<a ng-show="message.date_seen != 0"  ng-click="changeSeen(message.id, 'unseen')">
+							From: {{ message.sender }}
+						</a>
+						<small class="pull-right">{{ message.created_date | date:'MM/dd/yy | HH:mm:ss' }}</small>
+					</div>
+					<div>{{ message.note }}</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-7">
+		<div class="row">
+			<div class="col-xs-12 col-md-6">
+				Score Card
+			</div>
+			<div class="col-xs-12 col-md-6">
+				Video Highlights
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-5">
+		Large Video
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+
+		<div class="row">
+			<div class="col-xs-6 col-md-3">
+				<strong>Height</strong>
+				<ul ng-repeat="height in profile.height">
+					<li>{{ height.height }} <small>{{height.date | date:'MM/dd/yy'}}</small></li>
+				</ul>
+			</div>
+			<div class="col-xs-6 col-md-3">
+				<strong>Weight</strong>
+				<ul ng-repeat="weight in profile.weight">
+					<li>{{ weight.weight }} <small>{{weight.date | date:'MM/dd/yy'}}</small></li>
+				</ul>
+			</div>
+			<div class="col-xs-6 col-md-3">
+				<strong>Positions</strong>
+				<ul ng-repeat="pos in profile.position">
+					<li>{{ pos.position }} <small>{{pos.pos_type}}</small></li>
+				</ul>
+			</div>
+			<div class="col-xs-6 col-md-3">
+				<strong>Scores</strong>
+				<ul ng-repeat="sat in profile.sat">
+					<li>{{ sat.score }} <small>{{sat.date | date:'MM/dd/yy'}}</small></li>
+				</ul>
+				<ul ng-repeat="act in profile.act">
+					<li>{{ act.score }} <small>{{act.date | date:'MM/dd/yy'}}</small></li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</div>

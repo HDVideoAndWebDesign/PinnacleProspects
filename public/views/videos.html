@@ -1,0 +1,141 @@
+﻿<div class="row">
+	<div class="col-xs-12">
+		<div class="container-fluid">
+		    <div class="row">
+
+		      <!-- The Upload Form -->
+		      <div class="col-md-12">
+		        <div>
+		          <div>
+		            <input type="file" name="file" file></input>
+		            <!-- Progress Bar -->
+		            <div class="progress">
+		              <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress }}%;">
+		                {{ uploadProgress == 0 ? '' : uploadProgress + '%' }}
+		              </div>
+		            </div>            
+		            <a class="btn btn-primary btn-block btn-lg" ng-click="upload()">Upload</a>
+		          </div>
+		        </div>
+		      </div>     
+		    </div>
+		  </div>
+	</div>
+</div>
+
+
+
+<div class="row black-on-white">
+
+	<div class="row">
+		
+	<div class="col-xs-12">
+		
+		<h3>Videos <span class="pull-right"><a data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-plus"></span></a></span></h3>
+	
+	</div>
+		
+	<div class="col-xs-12 col-sm-8">
+
+			<p><strong class="subhead" id="titlesource">{{ video.title }}</strong></p>
+				<div class="center-block" align="center">						
+					<video width="100%" height="auto" id="videosource" controls="" style="margin: auto; max-width: 800px; max-height: 664px;">
+					<source src="{{ video.video_link }}" id="mp4Source" type="video/mp4">
+						Your browser does not support the video tag.
+					</video>
+					<img src="" id="photosource" class="img-responsive" style="display: none">
+					<p id="notesource">{{ video.note }}</p>
+					<br>
+				</div>
+
+	</div>
+	
+	<div class="col-xs-12 col-sm-4">
+		<h3 class="video-archives"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> &nbsp; Video Archives</h3>
+	<ul class="video-list">
+	
+		<li>
+			
+			<div class="row">
+				<div class="col-xs-3">
+					<img onclick="ChangeVid('{{ video.video_link }}', '{{ video.note }}', '{{ video.title }}')" src="{{ video.thumb }}" alt="{{ video.note }}" title="{{ video.note }}" class="img-rounded img-responsive">
+				</div>
+				<div class="col-xs-9">
+					<div class="video-title" onclick="ChangeVid('{{ video.video_link }}', '{{ video.note }}', '{{ video.title }}')">
+						{{ video.title }}
+					</div>	
+					<p class="tabbed-over">{{ video.note }}</p>
+				</div>
+			</div>
+			
+		</li>
+
+	</ul>
+	<div class="clearfix"></div>
+
+	</div>	
+		
+		
+	</div>
+		
+
+		
+	<script>
+		
+		function videoHeight() {
+				videoheight = $(window).height() - 275;
+				console.log(videoheight);
+				$('#videosource').css('max-height', videoheight)
+			}
+			
+		$(window).on('load', function (e) {
+			videoHeight();
+		});
+		
+		function ChangeVid(video, note, title) { 					
+			var player = document.getElementById('videosource')
+			var mp4vid = document.getElementById('mp4Source');
+			var photo = document.getElementById('photosource');
+			
+			player.pause();
+			
+			$('#videosource').css("display", "block");
+			$('#photosource').css("display", "none");
+			$('#notesource').html(note);
+			$('#titlesource').html(title);
+			$("html, body").scrollTop($(".black-on-white").offset().top);
+
+			$(mp4vid).attr('src', video);
+			player.load();
+			var count = 0
+			var vid_int = window.setInterval(function(){
+				if (player.networkState === 1 ){
+					player.play();
+					clearInterval(vid_int);
+					console.log('Finally loaded');
+				} else {
+					console.log('Not yet loaded enough: ' + count);
+					count++;
+					if(count > 20) {
+						console.log('This has taken far too long to pre-fetch, we should move on.');
+					}
+				}
+			}, 400);
+			videoHeight();
+		}
+		
+		function ChangePhoto(photo, note, title) { 					
+			var player = document.getElementById('videosource')
+			player.pause();
+			
+			$('#videosource').css("display", "none");
+			$('#photosource').css("display", "block");
+			$('#photosource').attr('src', photo);
+			$('#notesource').html(note);
+			$('#titlesource').html(title);
+			$("html, body").scrollTop($(".black-on-white").offset().top);		
+		}
+	</script>
+	
+</div>
+
