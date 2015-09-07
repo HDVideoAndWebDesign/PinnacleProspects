@@ -191,7 +191,37 @@ app.put('/message/unseen/:messageid', function (req, res, next) {
 });
 
 app.post('/message', function (req, res, next) {
-  res.send('create a message');
+  if (!req.body.note || !req.body.recipientid || !req.body.sender) {
+      res.send({msg: 'Message request missing a required field!', success: false});
+  } else {
+      var newMsg = {
+          date_seen: 0,
+          created_date: Date.now(),
+          recipient: req.body.recipientid,
+          sender: req.body.sender,
+          note: req.body.note
+      }
+      r.db('pinnacle').table('messages').insert(newMsg).run(req.app._rdbConn, function (err, result) {
+        if (err) {
+            throw err;
+        }
+        res.send({res: result, success: true});
+      })
+  }
+});
+
+app.get('/users/all', function (req, res, next) {
+    r.db('pinnacle').table('users').pluck("id", "name").run(req.app._rdbConn, function (err, cursor){
+        if (err) {
+            throw err;
+        }
+        cursor.toArray(function (err, result) {
+            if (err) {
+                throw err;
+            }
+            res.send(result);
+        });
+    });
 });
 
 /**

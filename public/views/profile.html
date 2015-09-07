@@ -47,11 +47,11 @@
 		</p>
 
 		<div class="memo_wrapper">
-			<div class="media" ng-repeat="message in messages">
+			<div ng-hide="showReply" class="media" ng-repeat="message in messages">
 				<div class="media-body">
 					<div>
 						<a ng-show="message.date_seen == 0" ng-click="changeSeen(message.id, 'seen')">
-							<span class="glyphicon glyphicon-envelope"></span> <strong>From: {{ message.sender }}</strong>
+							<span class="glyphicon glyphicon-flag"></span> <strong>From: {{ message.sender }}</strong>
 						</a>
 						<a ng-show="message.date_seen != 0"  ng-click="changeSeen(message.id, 'unseen')">
 							From: {{ message.sender }}
@@ -59,9 +59,16 @@
 						<small class="pull-right">{{ message.created_date | date:'MM/dd/yy | HH:mm:ss' }}</small>
 					</div>
 					<div>{{ message.note }}</div>
+					<div><small>
+					<a ng-click="showReplyfn(message.id)" class="pull-left"><i class="glyphicon glyphicon-share-alt"></i> Reply</a></small>
+					</div>
 				</div>
 			</div>
-			
+			<div ng-show="showReply">
+				
+				<select ng-model="message.recipient" ng-init="message.recipient = allUsers[0]" ng-options="user.name for user in allUsers track by user.id"></select> 
+				<textarea ng-model="message.body" rows="3"></textarea>
+			</div>
 		</div>
 	</div>
 </div>
