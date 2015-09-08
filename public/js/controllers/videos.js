@@ -1,16 +1,42 @@
-﻿(function () {
+(function () {
     'use strict';
 
     angular
         .module('app')
         .controller('VideosController', VideosController);
 
-    VideosController.$inject = ['$rootScope'];
-    function VideosController($rootScope) {
+    VideosController.$inject = ['$rootScope', '$http'];
+    function VideosController($rootScope, $http) {
           $rootScope.sizeLimit      = 1058576000; // 1000MB in Bytes
           $rootScope.uploadProgress = 0;
           $rootScope.creds          = {};
+          $rootScope.videoTitle     = "";
+          $rootScope.videoNote      = "";
 
+          $rootScope.addVideo = function(){
+            if($rootScope.viewVideo === true){
+              $rootScope.viewVideo = false;
+            } else {
+              $rootScope.viewVideo = true;
+              $http.get('/videoauth/').
+                then(function(response) {
+                  $rootScope.creds = response.data;
+                }, function(response) {
+                  toastr.error(response.message);
+                });
+            }
+          }
+
+          $rootScope.getVideos = function(){
+            $http.get('/videos/' + $rootScope.globals.currentUser.userid).
+              then(function(response) {
+                $rootScope.videos = response.data;
+              }, function(response) {
+                toastr.error(response.message);
+            });
+          }
+
+          $rootScope.getVideos();
 
           $rootScope.upload = function() {
             AWS.config.update({ accessKeyId: $rootScope.creds.access_key, secretAccessKey: $rootScope.creds.secret_key });
@@ -18,7 +44,6 @@
             var bucket = new AWS.S3({ params: { Bucket: $rootScope.creds.bucket } });
           
             if($rootScope.file) {
-                console.log(bucket);
                 // Perform File Size Check First
                 var fileSize = Math.round(parseInt($rootScope.file.size));
                 if (fileSize > $rootScope.sizeLimit) {
@@ -36,8 +61,30 @@
                     return false;
                   }
                   else {
-                    // Upload Successfully Finished
+                    console.log(data);
+                    console.log(uniqueFileName);
+                    // Upload Successfully Finished, add the video to the users videos pile
+
+                    $rootScope.nv = {};
+                    
+                    $rootScope.nv = {
+                      'note': $rootScope.videoNote,
+                      'userid': $rootScope.globals.currentUser.userid,
+                      'title': $rootScope.videoTitle,
+                      'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
+                    }
+
+                    $http.post('/videos/', $rootScope.nv).
+                      then(function(response) {
+                        $rootScope.nv = {};
+                        toastr.success(response.message);
+                        $rootScope.getVideos();
+                      }, function(response) {
+                        toastr.error(response.message);
+                    });
+
                     toastr.success('File Uploaded Successfully', 'Done');
+                    $rootScope.addVideo();
 
                     // Reset The Progress Bar
                     setTimeout(function() {

@@ -10,7 +10,7 @@ directives.directive('file', function() {
     },
     link: function($rootScope, el, attrs){
       el.bind('change', function(event){
-        console.log($rootScope);
+        // console.log($rootScope);
         var files = event.target.files;
         var file = files[0];
         $rootScope.file = file;

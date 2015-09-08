@@ -43,11 +43,19 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-5">
-		<p><strong class="subhead">Messages <span class="pull-right"><a><span class="glyphicon glyphicon-envelope"></span></a><span class="badge pull-right">{{ messages_count }}</span></span></strong>
+		<p>
+			<strong class="subhead">
+				Messages  <span class="badge">{{ messages_count }}</span>
+				<span class="pull-right">
+					<a ng-click="createMessage()">
+						<span class="glyphicon glyphicon-plus"></span>
+					</a>  					
+				</span>
+			</strong>
 		</p>
 
 		<div class="memo_wrapper">
-			<div ng-hide="showReply" class="media" ng-repeat="message in messages">
+			<div ng-hide="showWrite" class="media" ng-repeat="message in messages | orderBy : '-created_date'">
 				<div class="media-body">
 					<div>
 						<a ng-show="message.date_seen == 0" ng-click="changeSeen(message.id, 'seen')">
@@ -59,15 +67,19 @@
 						<small class="pull-right">{{ message.created_date | date:'MM/dd/yy | HH:mm:ss' }}</small>
 					</div>
 					<div>{{ message.note }}</div>
-					<div><small>
-					<a ng-click="showReplyfn(message.id)" class="pull-left"><i class="glyphicon glyphicon-share-alt"></i> Reply</a></small>
-					</div>
+<!-- 					<div><small>
+					<a ng-click="showWritefn(message.id, message.sender)" class="pull-left"><i class="glyphicon glyphicon-share-alt"></i> Reply</a></small>
+					</div> -->
 				</div>
 			</div>
-			<div ng-show="showReply">
-				
-				<select ng-model="message.recipient" ng-init="message.recipient = allUsers[0]" ng-options="user.name for user in allUsers track by user.id"></select> 
-				<textarea ng-model="message.body" rows="3"></textarea>
+			<div ng-show="showWrite">
+				<div><label>To: </label>
+					<select ng-model="recipientid" ng-options="user.name for user in allUsers track by user.id"></select> 
+				</div>
+				<div><label>Message: </label><br/>
+					<textarea ng-model="note" rows="3" style="border: 1px solid #dedede; background-color: #fff; width: 100%"></textarea>
+				</div>
+				<button ng-click="writeMessage(recipientid.id, note)">Send</button> <button ng-click="cancelMessage()">Cancel</button>
 			</div>
 		</div>
 	</div>

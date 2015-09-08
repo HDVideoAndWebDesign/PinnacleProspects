@@ -100,33 +100,66 @@ app.post('/login', function (req, res, next) {
     } else if (!req.body.password) {
         res.send({msg: 'Incorrect / No Password Entered', success: false});
     } else {
-        r.db('pinnacle').table('auth').filter({username: req.body.username}).run(req.app._rdbConn, function (err, cursor) {
-            if(err) {
-                return next(err);
-            }
-            cursor.toArray(function (err, result) {
+           r.db('pinnacle').table('auth').filter({username: req.body.username}).innerJoin(r.db('pinnacle').table('users').pluck('id', 'username'), function (authrow, userrow) { return authrow('username').eq(userrow('username'))}).zip().run(req.app._rdbConn, function (err, cursor) { 
                 if (err) {
-                    throw err;
+                    return next(err);    
                 }
-
-                if (req.body.password == result[0].password) {
-                    res.send({msg: 'Welcome back.' , success: true});
-                } else {
-                    res.send({msg: 'Incorrect / No Password Entered', success: false});
-                }
-
-            });
+                cursor.toArray(function (err, result) {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log(result[0].password);
+                    if (req.body.password == result[0].password) {
+                        res.send({msg: 'Welcome back.' , success: true, userid: result[0].id});
+                    } else {
+                        res.send({msg: 'Incorrect / No Password Entered', success: false});
+                    }
+                })
         });
     }
 });
 
 // send video to s3
-app.post('/videos/:userid', function (req, res, next) {
-    res.send({video_url: 'http://www.thespicegirls.com/'});
+app.post('/videos', function (req, res, next) {
+    if (!req.body.userid || !req.body.video_link ) {
+        res.send({msg: 'Invalid or missing data.', success: false });
+    } else {
+        var newVid = {
+          admin_viewed: false,
+          created_date: Date.now(),
+          userid: req.body.userid,
+          note: req.body.note || "",
+          title: req.body.title || "",
+          video_link: req.body.video_link
+        };
+        r.db('pinnacle').table('videos').insert(newVid).run(req.app._rdbConn, function (err, result) {
+            if (err) {
+                throw err;
+            }
+            res.send({res: result, success: true});
+        });
+    }
 });
 
 app.get('/videos/:userid', function (req, res, next) {
-    res.send('videos by user');
+    if (!req.params.userid) {
+        res.send({msg: 'Invalid or missing userid', success: false});
+    } else {
+
+        r.db('pinnacle').table('videos').filter({userid: req.params.userid}).run(req.app._rdbConn, function (err, cursor) {
+            if (err) {
+                return next(err);
+            }
+
+            cursor.toArray(function (err, result) {
+                if (err) {
+                    throw err;
+                }
+
+                res.send(result);
+            });
+        });
+    }
 });
 
 app.get('/videoauth', function (req, res, next) {

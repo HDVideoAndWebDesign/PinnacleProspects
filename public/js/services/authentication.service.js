@@ -21,6 +21,7 @@
              ----------------------------------------------*/
             $http.post('/login', { username: username, password: password })
                 .success(function (response) {
+                    $rootScope.userid = response.userid,
                     callback(response);
                 });
 
@@ -32,7 +33,8 @@
             $rootScope.globals = {
                 currentUser: {
                     username: username,
-                    authdata: authdata
+                    authdata: authdata,
+                    userid: $rootScope.userid
                 }
             };
 

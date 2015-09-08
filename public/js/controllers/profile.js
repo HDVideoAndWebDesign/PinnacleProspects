@@ -8,7 +8,7 @@
     ProfileController.$inject = ['$rootScope', '$http'];
     function ProfileController($rootScope, $http) {
 
-		$rootScope.showReply = false;
+		$rootScope.showWrite = false;
 
         // Simple get request example:
 		$http.get('/profile/' + $rootScope.globals.currentUser.username).
@@ -21,17 +21,22 @@
 					}, function(response) {
 						toastr.error(response.message);
 					});
-				$http.get('/messages/' + $rootScope.profile.id).
-					then(function(response) {
-						$rootScope.messages = response.data;
-						$rootScope.messages_count = response.data.length;
-					console.log($rootScope.messages);
-					}, function(response) {
-					toastr.error(response.message);
-					});
+					$rootScope.getMessages();
 		  }, function(response) {
 		    toastr.error(response.msg);
 		 });
+
+
+		$rootScope.getMessages = function(){
+			$http.get('/messages/' + $rootScope.profile.id).
+				then(function(response) {
+					$rootScope.messages = response.data;
+					$rootScope.messages_count = response.data.length;
+				console.log($rootScope.messages);
+				}, function(response) {
+				toastr.error(response.message);
+				});
+		} 
 
 
 		$rootScope.changeSeen = function(messageid, switchToggle) {
@@ -61,17 +66,26 @@
 			});
 		}
 
-		$rootScope.showReplyfn = function(messageid, recipient) {
-			$rootScope.showReply = true;
-			$rootScope.message.recipient = 
-			$rootScope.replyToMessageID = messageid;
+		$rootScope.createMessage = function() {
+			$rootScope.showWrite = true;
 		}
-		$rootScope.writeReply = function() {
-			console.log("Write Reply");
-			$rootScope.showReply = false;
-			$http.post('/message/', $rootScope.message).
+		$rootScope.cancelMessage = function() {
+			$rootScope.showWrite = false;
+			$rootScope.recipientid = '';
+			$rootScope.note = '';
+		}
+		$rootScope.writeMessage = function(recipientid, note) {
+			$rootScope.showWrite = false;
+			$rootScope.newmessage = {
+				"recipientid": recipientid,
+				"sender": $rootScope.profile.id,
+				"note": note
+			};
+			$http.post('/message/', $rootScope.newmessage).
 				then(function(response) {
+					$rootScope.newmessage = {};
 					toastr.success(response.message);
+					$rootScope.getMessages();
 				}, function(response) {
 					toastr.error(response.message);
 			});
