@@ -8,12 +8,12 @@
 	
 	</div>
 		
-	<div class="col-xs-12 col-sm-7">
+	<div class="col-xs-12 col-sm-7" ng-repeat="video in videos | orderBy: '-created_date' | limitTo:1">
 
 		<p><strong class="subhead" id="titlesource">{{ video.title }}</strong></p>
 		<div class="center-block" align="center">						
 			<video width="100%" height="auto" id="videosource" controls="" style="margin: auto; max-width: 800px; max-height: 664px;">
-			<source ng-src="{{ video.video_link }}" id="mp4Source" type="video/mp4">
+			<source ng-src="{{ video.video_link | trusted }}" id="mp4Source" type="video/mp4">
 				Your browser does not support the video tag.
 			</video>
 			<p id="notesource">{{ video.note }}</p>
@@ -23,6 +23,7 @@
 	</div>
 
 	<div class="col-xs-12 col-sm-5" ng-show="viewVideo">
+
 		<h3 class="video-archives"><span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; Add Video</h3>
 
 		<div class="form-group">

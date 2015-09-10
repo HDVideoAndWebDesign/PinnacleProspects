@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app', ['ngRoute', 'ngCookies', 'directives'])
+        .module('app', ['ngRoute', 'ngCookies', 'directives', 'trusted'])
         .config(config)
         .run(run);
 
@@ -41,6 +41,7 @@
             // })
 
             .otherwise({ redirectTo: '/login' });
+
     }
 
     run.$inject = ['$rootScope', '$location', '$cookieStore', '$http'];

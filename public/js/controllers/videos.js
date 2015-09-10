@@ -10,8 +10,13 @@
           $rootScope.sizeLimit      = 1058576000; // 1000MB in Bytes
           $rootScope.uploadProgress = 0;
           $rootScope.creds          = {};
-          $rootScope.videoTitle     = "";
-          $rootScope.videoNote      = "";
+
+
+          // app.filter('trusted', ['$sce', function ($sce) {
+          //   return function(url) {
+          //     return $sce.trustAsResourceUrl(url);
+          //   };
+          // }]);
 
           $rootScope.addVideo = function(){
             if($rootScope.viewVideo === true){
@@ -38,7 +43,7 @@
 
           $rootScope.getVideos();
 
-          $rootScope.upload = function() {
+          $rootScope.upload = function(videoTitle, videoNote) {
             AWS.config.update({ accessKeyId: $rootScope.creds.access_key, secretAccessKey: $rootScope.creds.secret_key });
             AWS.config.region = 'us-east-1';
             var bucket = new AWS.S3({ params: { Bucket: $rootScope.creds.bucket } });
@@ -67,10 +72,12 @@
 
                     $rootScope.nv = {};
                     
+                    console.log($rootScope.videoTitle+ ": " + $rootScope.videoNote)
+
                     $rootScope.nv = {
-                      'note': $rootScope.videoNote,
+                      'note': videoNote,
                       'userid': $rootScope.globals.currentUser.userid,
-                      'title': $rootScope.videoTitle,
+                      'title': videoTitle,
                       'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
                     }
 
