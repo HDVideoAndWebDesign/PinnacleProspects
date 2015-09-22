@@ -2,12 +2,34 @@
 	<div class="col-xs-12 col-md-7">
 		
 		<div class="row">
-			<div class="col-xs-3 col-md-4">
-				Image  
+			<div class="col-xs-3 col-md-4" ng-hide="showImage">
+				<img ng-src="{{profile.image}}" width="90%">
+				<span class="pull-right">
+					<a ng-click="createImage()">
+						<span class="glyphicon glyphicon-plus"></span>
+					</a>  					
+				</span>
 			</div>
+
+			<div class="col-xs-3 col-md-4" ng-show="showImage">
+				<div class="form-group">
+					<label for="videoFile">File input</label>
+					<input type="file" id="file" class="form-control" file required>
+				</div>
+
+		        <!-- Progress Bar -->
+		        <div class="progress">
+		          <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress }}%;">
+		            {{ uploadProgress == 0 ? '' : uploadProgress + '%' }}
+		          </div>
+		        </div>            
+		        <a class="btn btn-primary" ng-disabled="newvideo.title.$invalid || newvideo.note.$invalid || newvideo.file.$invalid" ng-click="upload(videoTitle, videoNote)">Upload</a>
+		        <a class="btn" ng-click="createImage()">Cancel</a>
+	        </div>
+
 			<div class="col-xs-9 col-md-8">
 				<p><strong class="subhead">{{ profile.name }}</strong></p>
-				<table>
+				<table class="infotable">
 					<tr>
 						<td><strong>High School</strong></td><td><input ng-model="profile.high_school" size="{{ profile.high_school.length }}" ng-blur="updateProfile(profile)" placeholder="High School"></td>
 					</tr>
@@ -24,7 +46,7 @@
 						<td><strong>Home Town</strong></td><td><input ng-model="profile.home_town" size="{{ profile.home_town.length }}" ng-blur="updateProfile(profile)" placeholder="City, State"></td>
 					</tr>
 					<tr>
-						<td><strong>Graduation Year</strong></td><td><input ng-model="profile.grad_year" size="{{ profile.grad_year.length }}" ng-blur="updateProfile(profile)" placeholder="Expected Graduation Year"> </td>
+						<td><strong>Grad Year</strong></td><td><input ng-model="profile.grad_year" size="{{ profile.grad_year.length }}" ng-blur="updateProfile(profile)" placeholder="Expected Graduation Year"> </td>
 					</tr>
 					<tr>
 						<td><strong>Class</strong></td><td><input ng-model="profile.class" size="{{ profile.class.length }}" ng-blur="updateProfile(profile)" placeholder="Class"> </td>
@@ -37,8 +59,8 @@
 		</div>
 		<div class="row">
 			<div class="col-xs-12" ng-if="profile.personal_bio">
-				<strong>Personal Bio</strong>
-				<p>{{ profile.personal_bio }}</p>
+				<strong>Personal Bio</strong><br>
+				<textarea ng-model="profile.personal_bio" rows="5" style="max-width: 100%; width: 100%" ng-blur="updateProfile(profile)" placeholder="{{profile.personal_bio}}"></textarea>
 			</div>
 		</div>
 	</div>
@@ -55,21 +77,23 @@
 		</p>
 
 		<div class="memo_wrapper">
-			<div ng-hide="showWrite" class="media" ng-repeat="message in messages | orderBy : '-created_date'">
+			<div ng-hide="showWrite" class="media" style="margin-top: 5px" ng-repeat="message in messages | orderBy : '-created_date'">
 				<div class="media-body">
-					<div>
-						<a ng-show="message.date_seen == 0" ng-click="changeSeen(message.id, 'seen')">
-							<span class="glyphicon glyphicon-flag"></span> <strong>From: {{ message.sender }}</strong>
-						</a>
-						<a ng-show="message.date_seen != 0"  ng-click="changeSeen(message.id, 'unseen')">
-							From: {{ message.sender }}
-						</a>
-						<small class="pull-right">{{ message.created_date | date:'MM/dd/yy | HH:mm:ss' }}</small>
+					<div class="row">
+						<div class="col-xs-2"><img ng-src="{{ message.profile_image }}" width="100%" style="max-height: 25px"></div>
+						<div class="col-xs-10">
+							<div>
+								<a ng-show="message.date_seen == 0" ng-click="changeSeen(message.id, 'seen')">
+									<span class="glyphicon glyphicon-flag"></span> <strong>{{ message.sender }}</strong>,
+								</a>
+								<a ng-show="message.date_seen != 0"  ng-click="changeSeen(message.id, 'unseen')">
+									{{ message.sender }}, 
+								</a>
+								<small>{{ message.created_date | date:'MM/dd/yy | HH:mm:ss' }}</small>
+							</div>
+							<div>{{ message.note }}</div>
+						</div>
 					</div>
-					<div>{{ message.note }}</div>
-<!-- 					<div><small>
-					<a ng-click="showWritefn(message.id, message.sender)" class="pull-left"><i class="glyphicon glyphicon-share-alt"></i> Reply</a></small>
-					</div> -->
 				</div>
 			</div>
 			<div ng-show="showWrite">
@@ -89,50 +113,196 @@
 	<div class="col-xs-12 col-md-7">
 		<div class="row">
 			<div class="col-xs-12 col-md-6">
-				Score Card
+				<strong class="subhead ng-binding">Score Card</strong>
+				<div ng-repeat="announcement in announcements">
+					<div>
+						<strong>{{ announcement.title }}</strong>, <small>{{ announcement.date_sent }}</small>
+						<p>{{ announcement.text }}</p>
+					</div>
+				</div>
 			</div>
 			<div class="col-xs-12 col-md-6">
-				Video Highlights
+				<strong class="subhead ng-binding">Video Highlights</strong>
+				
+				<div ng-show="profile_videos[0].video_link">
+					<strong>{{ profile_videos[0].title }}</strong>
+					<p>{{profile_videos[0].note}}</p>
+				</div>
+
+				<div ng-hide="profile_videos[0].video_link">
+					No videos, please upload some videos!
+				</div>
+				<a href="#/videos">Go to video library</a>
+
+				<div class="row" ng-show="profile_videos[1].video_link && profile_videos[2].video_link">
+					<div class="col-xs-6">
+						<video width="100%" height="auto" controls="" style="margin: auto; width: 100%; max-width: 200px; max-height: 100px;">
+							<source ng-src="{{ profile_videos[1].video_link | trusted }}" type="video/mp4">
+						Your browser does not support the video tag.
+						</video>
+					</div>
+				
+					<div class="col-xs-6">
+						<video width="100%" height="auto" controls="" style="margin: auto; width: 100%; max-width: 200px; max-height: 100px;">
+							<source ng-src="{{ profile_videos[2].video_link | trusted }}" type="video/mp4">
+						Your browser does not support the video tag.
+						</video>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-xs-12 col-md-5">
-		Large Video
+	<div class="col-xs-12 col-md-5" ng-show="profile_videos[0].video_link">
+		<video width="100%" height="auto" controls="" style="margin: auto; width: 100%; max-width: 400px; max-height: 220px;">
+		<source ng-src="{{ profile_videos[0].video_link | trusted }}" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
 	</div>
 </div>
 
-<div class="row">
+<div class="row slick_form">
 	<div class="col-xs-12">
 
-		<div class="row">
-			<div class="col-xs-6 col-md-3">
-				<strong>Height</strong>
-				<ul ng-repeat="height in profile.height">
-					<li>{{ height.height }} <small>{{height.date | date:'MM/dd/yy'}}</small></li>
-				</ul>
+	<tabset>
+	
+		<tab heading="Player">
+			<div class="row">
+				<div class="col-xs-6">
+
+					<table class="infotable">
+						<tr>
+							<td><strong>DOB</strong></td><td><input ng-model="profile.dob" size="{{ profile.dob.length }}" ng-blur="updateProfile(profile)" placeholder="Date of Birth"></td>
+						</tr>
+						<tr>
+							<td><strong>Height</strong></td>
+							<td>
+								<div class='row'>
+                                   <div class="col-xs-6">
+                                       <ul class="list-unstyled" data-ng-repeat="height in profile.height track by $index">
+                                           <li><span class="glyphicon glyphicon-trash clickable" ng-click="profile.height.splice($index, 1); updateProfile(profile)"></span> {{ height.height }}, <small>{{ height.created_date | date:'MM/dd/yy' }}</small>
+                                           </li>
+                                       </ul>
+                                       <span ng-show="profile.height.length === 0">No Heights Found</span>
+                                   </div>
+                                   <div class="col-xs-6">
+                                   		<div class="input-group">
+											<input type="text" class="form-control" ng-model="newheight" placeholder="Height">
+										  	<span class="input-group-addon" ng-click="profile.height.push({'height': newheight, 'created_date': getDatetime() }); updateProfile(profile)"><i class="glyphicon glyphicon-plus"></i></span>
+										</div>
+                                   </div>
+                               </div>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Weight</strong></td>
+							<td>
+								<div class='row'>
+                                   <div class="col-xs-6">
+                                       <ul class="list-unstyled" data-ng-repeat="weight in profile.weight track by $index">
+                                           <li><span class="glyphicon glyphicon-trash clickable" ng-click="profile.weight.splice($index, 1); updateProfile(profile)"></span> {{ weight.weight }}, <small>{{ weight.created_date | date:'MM/dd/yy' }}</small>
+                                           </li>
+                                       </ul>
+                                       <span ng-show="profile.weight.length === 0">No Weights Found</span>
+                                   </div>
+                                   <div class="col-xs-6">
+                                   		<div class="input-group">
+											<input type="text" class="form-control" ng-model="newweight" placeholder="Weight">
+										  	<span class="input-group-addon" ng-click="profile.weight.push({'weight': newweight, 'created_date': getDatetime() }); updateProfile(profile)"><i class="glyphicon glyphicon-plus"></i></span>
+										</div>
+                                   </div>
+                               </div>
+                            </td>
+						</tr>
+						<tr>
+							<td><strong>Bats</strong></td>
+							<td><input ng-model="profile.bats" size="{{ profile.bats.length }}" ng-blur="updateProfile(profile)" placeholder="Bats">
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Throws</strong></td><td><input ng-model="profile.throws" size="{{ profile.throws.length }}" ng-blur="updateProfile(profile)" placeholder="Throws"></td>
+						</tr>
+						<tr>
+							<td><strong>Positions</strong></td><td><input ng-model="profile.positions" size="{{ profile.Positions.length }}" ng-blur="updateProfile(profile)" placeholder="Positions"></td>
+						</tr>
+						<tr>
+							<td><strong>Scores</strong></td><td><input ng-model="profile.scores" size="{{ profile.Scores.length }}" ng-blur="updateProfile(profile)" placeholder="ACT/SAT/GPA"></td>
+						</tr>
+					</table>
+				</div>
+				<div class="col-xs-6">
+
+					<table class="infotable">
+						<tr>
+							<td><strong>Phone</strong></td><td><input ng-model="profile.contact[0].phone" size="{{ profile.contact[0].phone.length }}" ng-blur="updateProfile(profile)" placeholder="Phone"> </td>
+						</tr>
+						<tr>
+							<td><strong>Email</strong></td><td><input ng-model="profile.contact[0].email" size="{{ profile.contact[0].length }}" ng-blur="updateProfile(profile)" placeholder="Email"> </td>
+						</tr>
+						<tr>
+							<td><strong>Address</strong></td><td><input ng-model="profile.contact[0].address" size="{{ profile.contact[0].address.length }}" ng-blur="updateProfile(profile)" placeholder="Address"> </td>
+						</tr>
+						<tr>
+							<td><strong>City</strong></td><td><input ng-model="profile.contact[0].city" size="{{ profile.contact[0].city.length }}" ng-blur="updateProfile(profile)" placeholder="City"> </td>
+						</tr>
+						<tr>
+							<td><strong>State</strong></td><td><input ng-model="profile.contact[0].state" size="{{ profile.contact[0].state.length }}" ng-blur="updateProfile(profile)" placeholder="State"> </td>
+						</tr>
+						<tr>
+							<td><strong>Zip</strong></td><td><input ng-model="profile.contact[0].zip" size="{{ profile.contact[0].zip.length }}" ng-blur="updateProfile(profile)" placeholder="Zip"> </td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<div class="col-xs-6 col-md-3">
-				<strong>Weight</strong>
-				<ul ng-repeat="weight in profile.weight">
-					<li>{{ weight.weight }} <small>{{weight.date | date:'MM/dd/yy'}}</small></li>
-				</ul>
-			</div>
-			<div class="col-xs-6 col-md-3">
-				<strong>Positions</strong>
-				<ul ng-repeat="pos in profile.position">
-					<li>{{ pos.position }} <small>{{pos.pos_type}}</small></li>
-				</ul>
-			</div>
-			<div class="col-xs-6 col-md-3">
-				<strong>Scores</strong>
-				<ul ng-repeat="sat in profile.sat">
-					<li>{{ sat.score }} <small>{{sat.date | date:'MM/dd/yy'}}</small></li>
-				</ul>
-				<ul ng-repeat="act in profile.act">
-					<li>{{ act.score }} <small>{{act.date | date:'MM/dd/yy'}}</small></li>
-				</ul>
-			</div>
-		</div>
+		</tab>
+		<tab heading="Parent">
+				<table class="infotable">
+						<tr>
+							<td><strong>Name</strong></td><td><input ng-model="profile.contact[1].name" size="{{ profile.contact[1].name.length }}" ng-blur="updateProfile(profile)" placeholder="Phone"> </td>
+						</tr>
+						<tr>
+							<td><strong>Phone</strong></td><td><input ng-model="profile.contact[1].phone" size="{{ profile.contact[1].phone.length }}" ng-blur="updateProfile(profile)" placeholder="Phone"> </td>
+						</tr>
+						<tr>
+							<td><strong>Email</strong></td><td><input ng-model="profile.contact[1].email" size="{{ profile.contact[1].length }}" ng-blur="updateProfile(profile)" placeholder="Email"> </td>
+						</tr>
+						<tr>
+							<td><strong>Address</strong></td><td><input ng-model="profile.contact[1].address" size="{{ profile.contact[1].address.length }}" ng-blur="updateProfile(profile)" placeholder="Address"> </td>
+						</tr>
+						<tr>
+							<td><strong>City</strong></td><td><input ng-model="profile.contact[1].city" size="{{ profile.contact[1].city.length }}" ng-blur="updateProfile(profile)" placeholder="City"> </td>
+						</tr>
+						<tr>
+							<td><strong>State</strong></td><td><input ng-model="profile.contact[1].state" size="{{ profile.contact[1].state.length }}" ng-blur="updateProfile(profile)" placeholder="State"> </td>
+						</tr>
+						<tr>
+							<td><strong>Zip</strong></td><td><input ng-model="profile.contact[1].zip" size="{{ profile.contact[1].zip.length }}" ng-blur="updateProfile(profile)" placeholder="Zip"> </td>
+						</tr>
+					</table>
+		</tab>
+		<tab heading="Coach"><table class="infotable">
+						<tr>
+							<td><strong>Name</strong></td><td><input ng-model="profile.contact[2].name" size="{{ profile.contact[2].name.length }}" ng-blur="updateProfile(profile)" placeholder="Phone"> </td>
+						</tr>
+						<tr>
+							<td><strong>Phone</strong></td><td><input ng-model="profile.contact[2].phone" size="{{ profile.contact[2].phone.length }}" ng-blur="updateProfile(profile)" placeholder="Phone"> </td>
+						</tr>
+						<tr>
+							<td><strong>Email</strong></td><td><input ng-model="profile.contact[2].email" size="{{ profile.contact[2].length }}" ng-blur="updateProfile(profile)" placeholder="Email"> </td>
+						</tr>
+						<tr>
+							<td><strong>Address</strong></td><td><input ng-model="profile.contact[2].address" size="{{ profile.contact[2].address.length }}" ng-blur="updateProfile(profile)" placeholder="Address"> </td>
+						</tr>
+						<tr>
+							<td><strong>City</strong></td><td><input ng-model="profile.contact[2].city" size="{{ profile.contact[2].city.length }}" ng-blur="updateProfile(profile)" placeholder="City"> </td>
+						</tr>
+						<tr>
+							<td><strong>State</strong></td><td><input ng-model="profile.contact[2].state" size="{{ profile.contact[2].state.length }}" ng-blur="updateProfile(profile)" placeholder="State"> </td>
+						</tr>
+						<tr>
+							<td><strong>Zip</strong></td><td><input ng-model="profile.contact[2].zip" size="{{ profile.contact[2].zip.length }}" ng-blur="updateProfile(profile)" placeholder="Zip"> </td>
+						</tr>
+					</table></tab>
+	</tabset>
 
 	</div>
 </div>

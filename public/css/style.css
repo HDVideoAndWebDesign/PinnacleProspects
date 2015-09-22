@@ -10,7 +10,7 @@ a { cursor: pointer;}
 		  background-size: cover;
 		}		  
 
-		body { background-color: transparent; height: 100%; font-family: 'Gotham', sans-serif; font-weight: 300; font-size: 1.5em } 
+		body { background-color: transparent; height: 100%; font-family: 'Roboto', sans-serif; font-size: 1.3em;  } 
 		.nopad { padding: 0px; }
 		  
 		h3 {
@@ -208,7 +208,7 @@ img.left_icon{ float:left; background:none; margin:0 20px 0 0;}
 		.spacer2 { margin-bottom: 20px; }
 		p strong { font-size: 80%; color: #998F8E }
 		  
-		  .subhead { border-bottom: 1px solid #333; display: block; color: #F6303E; font-size: 110%}
+		  .subhead { display: block; color: #F6303E; font-size: 140%; font-weight: normal}
 		  .glyphicon { font-size: 100% }
 		  .abs-bot {
 				position: absolute;
@@ -487,5 +487,18 @@ h3 {
     margin: 0px;
     border: 0px;
     min-width: 50px;
+    width: 100%;
+    max-width: 100%;
 }
-   
+
+.whitebg { background-color: #FFF; margin: 2px 0px; } 
+
+.infotable td input { color: #333; }
+.infotable td strong, textarea { color: #999; font-weight: normal; padding-right: 20px; display: block;}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.form-control { height: 20px; } 
+.input-group input { padding: 3px 0px 2px 5px; font-size: 100%; background-color: #fff; border: 1px solid #ccc;
+    border-radius: 4px; width: auto;  }
+.input-group-addon { padding: 2px 5px; font-size: 90%;} 

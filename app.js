@@ -17,6 +17,14 @@ var assets = require('connect-assets');
 var r = require('rethinkdb');
 
 /**
+ * Controllers for routing
+ */
+var user = require('./controllers/user');
+var video = require('./controllers/video');
+var message = require('./controllers/message');
+var announcement = require('./controllers/announcement');
+
+/**
  * API keys and Passport configuration.
  */
 var secrets = require('./config/secrets');
@@ -52,210 +60,38 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
 
-/**
- * Primary app routes.
- */
+// Main app route 
+// primarily a dummy as public/index.html 
+// should be served instead of this response
 app.get('/', function (req, res, next) {
-    res.send('hello');
+    res.send('pinnacle prospects');
 });
 
-//app.get('/profile');
+// User routes
+app.get('/profile/:username', user.getProfile);
+app.put('/profile/:userid', user.updateProfile);
+app.post('/login', user.login);
+app.get('/users/all', user.allUsers);
 
-app.get('/profile/:username', function (req, res, next) {
-    if (!req.params.username) {
-        res.send({msg: 'Invalid Username Submitted', success: false});
-    } else {
-        r.db('pinnacle').table('users').filter({username: req.params.username}).run(req.app._rdbConn, function (err, cursor) {
-            if (err) {
-                return next(err);
-            }
-            cursor.toArray(function (err, result) {
-                if (err) {
-                    throw err;
-                }
-                res.send(result[0]);
-            });
-        });
-    }
-});
-
-app.put('/profile/:userid', function (req, res, next) {
-    if (!req.params.userid) {
-         res.send({msg: 'Invalid user ID', success: false});
-    } else {
-        req.body.last_updated = Date.now();
-        r.db('pinnacle').table('users').get(req.params.userid)
-        .update(req.body).run(req.app._rdbConn, function (err, result) {
-            if (err) {
-                throw err;
-            }
-            res.send({msg: 'User updated', success: true});
-        });
-    }
-});
-
-app.post('/login', function (req, res, next) {
-    if (!req.body.username) {
-        res.send({msg: 'Invalid Username Submitted', success: false});
-    } else if (!req.body.password) {
-        res.send({msg: 'Incorrect / No Password Entered', success: false});
-    } else {
-           r.db('pinnacle').table('auth').filter({username: req.body.username}).innerJoin(r.db('pinnacle').table('users').pluck('id', 'username'), function (authrow, userrow) { return authrow('username').eq(userrow('username'))}).zip().run(req.app._rdbConn, function (err, cursor) { 
-                if (err) {
-                    return next(err);    
-                }
-                cursor.toArray(function (err, result) {
-                    if (err) {
-                        throw err;
-                    }
-                    console.log(result[0].password);
-                    if (req.body.password == result[0].password) {
-                        res.send({msg: 'Welcome back.' , success: true, userid: result[0].id});
-                    } else {
-                        res.send({msg: 'Incorrect / No Password Entered', success: false});
-                    }
-                })
-        });
-    }
-});
-
-// send video to s3
-app.post('/videos', function (req, res, next) {
-    if (!req.body.userid || !req.body.video_link ) {
-        res.send({msg: 'Invalid or missing data.', success: false });
-    } else {
-        var newVid = {
-          admin_viewed: false,
-          created_date: Date.now(),
-          userid: req.body.userid,
-          note: req.body.note || "",
-          title: req.body.title || "",
-          video_link: req.body.video_link
-        };
-        r.db('pinnacle').table('videos').insert(newVid).run(req.app._rdbConn, function (err, result) {
-            if (err) {
-                throw err;
-            }
-            res.send({res: result, success: true});
-        });
-    }
-});
-
-app.get('/videos/:userid', function (req, res, next) {
-    if (!req.params.userid) {
-        res.send({msg: 'Invalid or missing userid', success: false});
-    } else {
-
-        r.db('pinnacle').table('videos').filter({userid: req.params.userid}).run(req.app._rdbConn, function (err, cursor) {
-            if (err) {
-                return next(err);
-            }
-
-            cursor.toArray(function (err, result) {
-                if (err) {
-                    throw err;
-                }
-
-                res.send(result);
-            });
-        });
-    }
-});
+// Video routes
+app.post('/videos', video.uploadVideo); 
+app.get('/videos/:userid', video.getVideos);
 
 app.get('/videoauth', function (req, res, next) {
     res.send(secrets.s3);
 });
 
-// all messages for recipient ordered by created_date desc limit (10?)
-app.get('/messages/:userid', function (req, res, next) {
-    if (!req.params.userid) {
-        res.send({msg: 'Invalid UserID Submitted', success: false});
-    } else {
-        r.db('pinnacle').table('messages').filter({recipient: req.params.userid})
-        .outerJoin(r.db('pinnacle').table('users'), function (message, user) {
-            return message('sender').eq(user('id'))}).map(
-                {
-                    note: r.row('left')('note'),
-                    sender: r.row('right')('name'),
-                    created_date: r.row('left')('created_date'),
-                    id: r.row('left')('id'),
-                    date_seen: r.row('left')('date_seen')
-        })
-        .run(req.app._rdbConn, function (err, cursor) {
-            if (err) {
-                return next(err);
-            }
-            cursor.toArray(function (err, result) {
-                if (err) {
-                    throw err;
-                }
-                res.send(result);
-            });
-        });
-    }
-});
+// Message routes 
+app.get('/messages/:userid', message.getForUser);
+app.delete('/messages/:userid', message.remove);
+app.put('/message/seen/:messageid', message.markAsRead);
+app.put('/message/unseen/:messageid', message.markAsUnread);
+app.post('/message', message.addNew);
 
-app.put('/message/seen/:messageid', function (req, res, next) {
-    if (!req.params.messageid) {
-        res.send({msg: 'Invalid message ID', success: false});
-    } else {
-        r.db('pinnacle').table('messages').get(req.params.messageid)
-        .update({date_seen: r.now()}).run(req.app._rdbConn, function (err, result) {
-            if (err) {
-                throw err;
-            }
-            res.send({msg: 'Message marked as read', success: true});
-        });
-    }
-});
-
-app.put('/message/unseen/:messageid', function (req, res, next) {
-    if (!req.params.messageid) {
-        res.send({msg: 'Invalid message ID', success: false});
-    } else {
-        r.db('pinnacle').table('messages').get(req.params.messageid)
-        .update({date_seen: 0}).run(req.app._rdbConn, function (err, result) {
-            if (err) {
-                throw err;
-            }
-            res.send({msg: 'Message marked as unread', success: true});
-        });
-    }
-});
-
-app.post('/message', function (req, res, next) {
-  if (!req.body.note || !req.body.recipientid || !req.body.sender) {
-      res.send({msg: 'Message request missing a required field!', success: false});
-  } else {
-      var newMsg = {
-          date_seen: 0,
-          created_date: Date.now(),
-          recipient: req.body.recipientid,
-          sender: req.body.sender,
-          note: req.body.note
-      }
-      r.db('pinnacle').table('messages').insert(newMsg).run(req.app._rdbConn, function (err, result) {
-        if (err) {
-            throw err;
-        }
-        res.send({res: result, success: true});
-      })
-  }
-});
-
-app.get('/users/all', function (req, res, next) {
-    r.db('pinnacle').table('users').pluck("id", "name").run(req.app._rdbConn, function (err, cursor){
-        if (err) {
-            throw err;
-        }
-        cursor.toArray(function (err, result) {
-            if (err) {
-                throw err;
-            }
-            res.send(result);
-        });
-    });
-});
+// Anouncment routes
+app.get('/announcements', announcement.getAll);
+app.put('/announcements', announcement.readByUser);
+app.post('/announcements', announcement.addNew);
 
 /**
  * Error Handler.

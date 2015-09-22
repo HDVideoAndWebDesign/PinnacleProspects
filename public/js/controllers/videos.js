@@ -11,13 +11,6 @@
           $rootScope.uploadProgress = 0;
           $rootScope.creds          = {};
 
-
-          // app.filter('trusted', ['$sce', function ($sce) {
-          //   return function(url) {
-          //     return $sce.trustAsResourceUrl(url);
-          //   };
-          // }]);
-
           $rootScope.addVideo = function(){
             if($rootScope.viewVideo === true){
               $rootScope.viewVideo = false;
