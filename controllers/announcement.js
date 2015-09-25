@@ -24,10 +24,25 @@ exports.getAll = function(req, res, next) {
 
 // Put /announcements
 exports.readByUser = function(req, res, next) {
-    res.send('weeee');
+    res.send('update!');
 };
 
 // Post /announcements
 exports.addNew = function(req, res, next) {
-    res.send('neeeeeew');
+    if (!req.body.title || !req.body.announcement) {
+        res.send({msg: 'invalid or missing announcement data', success: false});
+    } else {
+    
+        var newAnnouncement = {
+            text: req.body.announcement,
+            title: req.body.title
+        };
+
+        r.db('pinnacle').table('announcements').insert(newAnnouncement).run(req.app._rdbConn, function (err, result) {
+            if (err) {
+                throw err;    
+            }
+            res.send({res: result, success: true});
+        });
+    }
 };

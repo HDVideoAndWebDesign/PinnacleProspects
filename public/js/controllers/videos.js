@@ -10,6 +10,7 @@
           $rootScope.sizeLimit      = 1058576000; // 1000MB in Bytes
           $rootScope.uploadProgress = 0;
           $rootScope.creds          = {};
+          $rootScope.selected_video = 'false';
 
           $rootScope.addVideo = function(){
             if($rootScope.viewVideo === true){
@@ -29,6 +30,15 @@
             $http.get('/videos/' + $rootScope.globals.currentUser.userid).
               then(function(response) {
                 $rootScope.videos = response.data;
+              }, function(response) {
+                toastr.error(response.message);
+            });
+          }
+
+          $rootScope.getVideo = function(videoid){
+            $http.get('/video/' + videoid).
+              then(function(response) {
+                $rootScope.selected_video = response.data;
               }, function(response) {
                 toastr.error(response.message);
             });

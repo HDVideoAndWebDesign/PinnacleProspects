@@ -10,7 +10,7 @@ exports.getForUser = function (req, res, next) {
     if (!req.params.userid) {
         res.send({msg: 'Invalid UserID Submitted', success: false});
     } else {
-        r.db('pinnacle').table('messages').filter({recipient: req.params.userid})
+        r.db('pinnacle').table('messages').filter({recipient: req.params.userid, deleted: false})
     .outerJoin(r.db('pinnacle').table('users'), function (message, user) {
         return message('sender').eq(user('id'))}).map(
         {
@@ -76,19 +76,28 @@ exports.addNew = function (req, res, next) {
             recipient: req.body.recipientid,
             sender: req.body.sender,
             profile_image: req.body.profile_image,
-            note: req.body.note
+            note: req.body.note,
+            deleted: false
         }
         r.db('pinnacle').table('messages').insert(newMsg).run(req.app._rdbConn, function (err, result) {
             if (err) {
                 throw err;
             }
             res.send({res: result, success: true});
-        })
+        });
     }
 };
 
 // Delete /message
-
 exports.remove = function (req, res, next) {
-  res.send({msg: 'will remove ' + req.body.messageid + 'when i get around to it'});
+    if (!req.body.messageid) {
+        res.send({msg: 'Message request missing required data!'});
+    } else {
+        r.db('pinnacle').table('messages').get(req.body.messageid).update({deleted: true}).run(req.app._rdbConn, function (err, result) {
+            if (err) {
+                throw err;
+            }
+            res.send({res: result, success: true});
+        });
+    }
 };

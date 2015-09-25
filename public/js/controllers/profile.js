@@ -22,6 +22,7 @@
 		  	$rootScope.profile = response.data;
 		    	///  Get Profile's videos
 			    $rootScope.getVideos();
+			    $rootScope.getAnnouncements();
 			    if($rootScope.profile.weight == ''){
 			    	$rootScope.profile.weight = []
 			    }
@@ -57,6 +58,15 @@
 	        });
 		}
 
+		$rootScope.getAnnouncements = function(){
+			$http.get('/announcements/').
+	          then(function(response) {
+	          	// got the video info
+	          	$rootScope.announcements = response.data;
+	          }, function(response) {
+	            toastr.error(response.data.msg);
+	        });
+		}
 
 		$rootScope.getMessages = function(){
 			$http.get('/messages/' + $rootScope.profile.id).

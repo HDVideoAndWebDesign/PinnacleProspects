@@ -13,11 +13,11 @@ exports.uploadVideo = function (req, res, next) {
     } else {
         var newVid = {
             admin_viewed: false,
-    created_date: Date.now(),
-    userid: req.body.userid,
-    note: req.body.note || "",
-    title: req.body.title || "",
-    video_link: req.body.video_link
+            created_date: Date.now(),
+            userid: req.body.userid,
+            note: req.body.note || "",
+            title: req.body.title || "",
+            video_link: req.body.video_link
         };
         r.db('pinnacle').table('videos').insert(newVid).run(req.app._rdbConn, function (err, result) {
             if (err) {
@@ -34,6 +34,28 @@ exports.getVideos = function (req, res, next) {
     } else {
 
         r.db('pinnacle').table('videos').filter({userid: req.params.userid}).run(req.app._rdbConn, function (err, cursor) {
+            if (err) {
+                return next(err);
+            }
+
+            cursor.toArray(function (err, result) {
+                if (err) {
+                    throw err;
+                }
+
+                res.send(result);
+            });
+        });
+    }
+};
+
+
+exports.getVideo = function (req, res, next) {
+    if (!req.params.videoid) {
+        res.send({msg: 'Invalid or missing videoid', success: false});
+    } else {
+
+        r.db('pinnacle').table('videos').filter({id: req.params.videoid}).run(req.app._rdbConn, function (err, cursor) {
             if (err) {
                 return next(err);
             }

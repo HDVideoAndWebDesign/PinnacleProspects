@@ -502,3 +502,5 @@ h3 {
 .input-group input { padding: 3px 0px 2px 5px; font-size: 100%; background-color: #fff; border: 1px solid #ccc;
     border-radius: 4px; width: auto;  }
 .input-group-addon { padding: 2px 5px; font-size: 90%;} 
+
+.tab-content { padding: 10px; }

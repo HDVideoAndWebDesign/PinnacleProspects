@@ -1,3 +1,8 @@
+<script>
+	$('.uibutton a').removeClass("selected")
+	$('#video_nav').addClass( "selected" );
+</script>
+
 <div class="row black-on-white">
 
 	<div class="row">
@@ -8,7 +13,21 @@
 	
 	</div>
 		
-	<div class="col-xs-12 col-sm-7" ng-repeat="video in videos | orderBy: '-created_date' | limitTo:1">
+	<div class="col-xs-12 col-sm-7" ng-show="selected_video != 'false'" ng-repeat="video in selected_video">
+
+		<p><strong class="subhead" id="titlesource">{{ video.title }}</strong></p>
+		<div class="center-block" align="center">						
+			<video width="100%" height="auto" id="videosource" controls="" style="margin: auto; max-width: 800px; max-height: 664px;">
+			<source ng-src="{{ video.video_link | trusted }}" id="mp4Source" type="video/mp4">
+				Your browser does not support the video tag.
+			</video>
+			<p id="notesource">{{ video.note }}</p>
+			<br>
+		</div>
+
+	</div>
+
+	<div class="col-xs-12 col-sm-7" ng-show="selected_video == 'false'" ng-repeat="video in videos | orderBy: '-created_date' | limitTo:1">
 
 		<p><strong class="subhead" id="titlesource">{{ video.title }}</strong></p>
 		<div class="center-block" align="center">						
@@ -51,10 +70,10 @@
 
 	
 	<div class="col-xs-12 col-sm-5" ng-hide="viewVideo">
-		<h3 class="video-archives"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> &nbsp; Video Archives</h3>
-		<ul class="video-list" ng-repeat="video in videos | orderBy: '-created_date'">
+		<strong class="subhead"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> &nbsp; Video Archives</strong>
+		<ul class="video-list" style="list-style: none" ng-repeat="video in videos | orderBy: '-created_date'">
 			<li>
-				<div class="video-title" ng-click="ChangeVid('{{ video.video_link }}', '{{ video.note }}', '{{ video.title }}')">{{ video.title }}</div>	
+				<div class="video-title" ng-click="getVideo(video.id)">{{ video.title }}</div>	
 				<p class="tabbed-over">{{ video.note }}</p>
 			</li>
 		</ul>

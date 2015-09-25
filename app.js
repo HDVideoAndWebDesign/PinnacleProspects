@@ -76,6 +76,7 @@ app.get('/users/all', user.allUsers);
 // Video routes
 app.post('/videos', video.uploadVideo); 
 app.get('/videos/:userid', video.getVideos);
+app.get('/video/:videoid', video.getVideo);
 
 app.get('/videoauth', function (req, res, next) {
     res.send(secrets.s3);
@@ -83,7 +84,7 @@ app.get('/videoauth', function (req, res, next) {
 
 // Message routes 
 app.get('/messages/:userid', message.getForUser);
-app.delete('/messages/:userid', message.remove);
+app.delete('/messages', message.remove);
 app.put('/message/seen/:messageid', message.markAsRead);
 app.put('/message/unseen/:messageid', message.markAsUnread);
 app.post('/message', message.addNew);

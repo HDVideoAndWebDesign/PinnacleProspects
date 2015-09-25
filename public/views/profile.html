@@ -1,3 +1,8 @@
+<script>
+	$('.uibutton a').removeClass("selected")
+	$('#profile_nav').addClass( "selected" );
+</script>
+
 <div class="row slick_form">
 	<div class="col-xs-12 col-md-7">
 		
@@ -116,7 +121,7 @@
 				<strong class="subhead ng-binding">Score Card</strong>
 				<div ng-repeat="announcement in announcements">
 					<div>
-						<strong>{{ announcement.title }}</strong>, <small>{{ announcement.date_sent }}</small>
+						<strong>{{ announcement.title }}</strong>, <small>{{ announcement.date_sent | date: "MM/dd/yy" }}</small>
 						<p>{{ announcement.text }}</p>
 					</div>
 				</div>
