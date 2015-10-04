@@ -26,6 +26,20 @@
             }
           }
 
+          $rootScope.addReply = function(){
+            if($rootScope.viewReply === true){
+              $rootScope.viewReply = false;
+            } else {
+              $rootScope.viewReply = true;
+            }
+          }
+
+          $rootScope.cancelReply = function() {
+            $rootScope.viewReply = false;
+            $rootScope.replyTitle = '';
+            $rootScope.replyNote = '';
+          }
+
           $rootScope.getVideos = function(){
             $http.get('/videos/' + $rootScope.globals.currentUser.userid).
               then(function(response) {
@@ -46,7 +60,7 @@
 
           $rootScope.getVideos();
 
-          $rootScope.upload = function(videoTitle, videoNote) {
+          $rootScope.upload = function(videoTitle, videoNote, isReply, videoParent) {
             AWS.config.update({ accessKeyId: $rootScope.creds.access_key, secretAccessKey: $rootScope.creds.secret_key });
             AWS.config.region = 'us-east-1';
             var bucket = new AWS.S3({ params: { Bucket: $rootScope.creds.bucket } });
@@ -75,26 +89,43 @@
 
                     $rootScope.nv = {};
                     
-                    console.log($rootScope.videoTitle+ ": " + $rootScope.videoNote)
-
-                    $rootScope.nv = {
-                      'note': videoNote,
-                      'userid': $rootScope.globals.currentUser.userid,
-                      'title': videoTitle,
-                      'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
+                    //console.log($rootScope.videoTitle+ ": " + $rootScope.videoNote)
+                    if(isReply == 'true'){
+                      $rootScope.nv = {
+                        'note': videoNote,
+                        'userid': $rootScope.globals.currentUser.userid,
+                        'title': videoTitle,
+                        'video_id': videoParent,
+                        'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
+                      }
+                      $http.post('/video_replies/', $rootScope.nv).
+                        then(function(response) {
+                          $rootScope.nv = {};
+                          toastr.success(response.message);
+                          $rootScope.getVideos();
+                          toastr.success('File Uploaded Successfully', 'Done');
+                          $rootScope.addVideo();
+                        }, function(response) {
+                          toastr.error(response.message);
+                      });
+                    } else {
+                      $rootScope.nv = {
+                        'note': videoNote,
+                        'userid': $rootScope.globals.currentUser.userid,
+                        'title': videoTitle,
+                        'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
+                      }
+                      $http.post('/videos/', $rootScope.nv).
+                        then(function(response) {
+                          $rootScope.nv = {};
+                          toastr.success(response.message);
+                          $rootScope.getVideos();
+                          toastr.success('File Uploaded Successfully', 'Done');
+                          $rootScope.addVideo();
+                        }, function(response) {
+                          toastr.error(response.message);
+                      });
                     }
-
-                    $http.post('/videos/', $rootScope.nv).
-                      then(function(response) {
-                        $rootScope.nv = {};
-                        toastr.success(response.message);
-                        $rootScope.getVideos();
-                      }, function(response) {
-                        toastr.error(response.message);
-                    });
-
-                    toastr.success('File Uploaded Successfully', 'Done');
-                    $rootScope.addVideo();
 
                     // Reset The Progress Bar
                     setTimeout(function() {

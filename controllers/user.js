@@ -18,7 +18,7 @@ exports.getProfile = function (req, res, next) {
             }
             cursor.toArray(function (err, result) {
                 if (err) {
-                    throw err;
+                    return next(err);
                 }
                 res.send(result[0]);
             });
@@ -34,7 +34,7 @@ exports.updateProfile = function (req, res, next) {
         r.db('pinnacle').table('users').get(req.params.userid)
     .update(req.body).run(req.app._rdbConn, function (err, result) {
         if (err) {
-            throw err;
+            return next(err);
         }
         res.send({msg: 'User updated', success: true});
     });
@@ -53,7 +53,7 @@ exports.login = function (req, res, next) {
             }
             cursor.toArray(function (err, result) {
                 if (err) {
-                    throw err;
+                    return next(err);
                 }
                 
                 if (result[0] && (req.body.password == result[0].password)) {
@@ -69,11 +69,11 @@ exports.login = function (req, res, next) {
 exports.allUsers = function (req, res, next) {
     r.db('pinnacle').table('users').pluck("id", "name").run(req.app._rdbConn, function (err, cursor) {
         if (err) {
-            throw err;
+            return next(err);
         }
         cursor.toArray(function (err, result) {
             if (err) {
-                throw err;
+                return next(err);
             }
             res.send(result);
         });

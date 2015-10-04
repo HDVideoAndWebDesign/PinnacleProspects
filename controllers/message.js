@@ -27,7 +27,7 @@ exports.getForUser = function (req, res, next) {
     }
     cursor.toArray(function (err, result) {
         if (err) {
-            throw err;
+            return next(err);
         }
         res.send(result);
     });
@@ -43,7 +43,7 @@ exports.markAsRead = function (req, res, next) {
         r.db('pinnacle').table('messages').get(req.params.messageid)
     .update({date_seen: r.now()}).run(req.app._rdbConn, function (err, result) {
         if (err) {
-            throw err;
+            return next(err);
         }
         res.send({msg: 'Message marked as read', success: true});
     });
@@ -58,7 +58,7 @@ exports.markAsUnread = function (req, res, next) {
         r.db('pinnacle').table('messages').get(req.params.messageid)
     .update({date_seen: 0}).run(req.app._rdbConn, function (err, result) {
         if (err) {
-            throw err;
+            return next(err);
         }
         res.send({msg: 'Message marked as unread', success: true});
     });
@@ -81,7 +81,7 @@ exports.addNew = function (req, res, next) {
         }
         r.db('pinnacle').table('messages').insert(newMsg).run(req.app._rdbConn, function (err, result) {
             if (err) {
-                throw err;
+                return next(err);
             }
             res.send({res: result, success: true});
         });
@@ -95,7 +95,7 @@ exports.remove = function (req, res, next) {
     } else {
         r.db('pinnacle').table('messages').get(req.body.messageid).update({deleted: true}).run(req.app._rdbConn, function (err, result) {
             if (err) {
-                throw err;
+                return next(err);
             }
             res.send({res: result, success: true});
         });

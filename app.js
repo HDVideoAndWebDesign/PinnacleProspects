@@ -23,6 +23,7 @@ var user = require('./controllers/user');
 var video = require('./controllers/video');
 var message = require('./controllers/message');
 var announcement = require('./controllers/announcement');
+var exercise = require('./controllers/exercise');
 
 /**
  * API keys and Passport configuration.
@@ -60,8 +61,8 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
 
-// Main app route 
-// primarily a dummy as public/index.html 
+// Main app route
+// primarily a dummy as public/index.html
 // should be served instead of this response
 app.get('/', function (req, res, next) {
     res.send('pinnacle prospects');
@@ -74,15 +75,18 @@ app.post('/login', user.login);
 app.get('/users/all', user.allUsers);
 
 // Video routes
-app.post('/videos', video.uploadVideo); 
+app.post('/videos', video.uploadVideo);
+app.put('/videos', video.videoViewed);
 app.get('/videos/:userid', video.getVideos);
 app.get('/video/:videoid', video.getVideo);
+app.post('/replies', video.uploadReply);
+app.put('/replies', video.replyViewed);
 
 app.get('/videoauth', function (req, res, next) {
     res.send(secrets.s3);
 });
 
-// Message routes 
+// Message routes
 app.get('/messages/:userid', message.getForUser);
 app.delete('/messages', message.remove);
 app.put('/message/seen/:messageid', message.markAsRead);
@@ -93,6 +97,13 @@ app.post('/message', message.addNew);
 app.get('/announcements', announcement.getAll);
 app.put('/announcements', announcement.readByUser);
 app.post('/announcements', announcement.addNew);
+
+// Exercise routes
+app.get('/exercises', exercise.getAll);
+app.post('/exercises', exercise.addNew);
+app.get('/exercise/:exerciseid', exercise.getByExerciseId);
+app.delete('/exercise/:exerciseid', exercise.remove);
+
 
 /**
  * Error Handler.
