@@ -12,11 +12,18 @@
           $rootScope.creds          = {};
           $rootScope.selected_video = 'false';
 
-          $rootScope.addVideo = function(){
+          $rootScope.addVideo = function(parentID){
             if($rootScope.viewVideo === true){
-              $rootScope.viewVideo = false;
+              //$rootScope.viewVideo = false;
             } else {
               $rootScope.viewVideo = true;
+              if(parentID != 0){
+                $rootScope.isReply = true;
+                $rootScope.connectID = parentID;
+              } else {
+                $rootScope.isReply = false;
+                $rootScope.connectID = '';
+              }
               $http.get('/videoauth/').
                 then(function(response) {
                   $rootScope.creds = response.data;
@@ -26,18 +33,10 @@
             }
           }
 
-          $rootScope.addReply = function(){
-            if($rootScope.viewReply === true){
-              $rootScope.viewReply = false;
-            } else {
-              $rootScope.viewReply = true;
-            }
-          }
-
           $rootScope.cancelReply = function() {
-            $rootScope.viewReply = false;
-            $rootScope.replyTitle = '';
-            $rootScope.replyNote = '';
+            $rootScope.viewVideo = false;
+            $rootScope.videoTitle = '';
+            $rootScope.videoNote = '';
           }
 
           $rootScope.getVideos = function(){

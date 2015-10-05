@@ -9,7 +9,7 @@
 		
 	<div class="col-xs-12">
 		
-		<h3>Videos <span class="pull-right"><a ng-click="addVideo()"><span class="glyphicon glyphicon-plus"></span></a></span></h3>
+		<h3>Videos <span class="pull-right"><a ng-click="addVideo(0)"><span class="glyphicon glyphicon-plus"></span></a></span></h3>
 	
 	</div>
 		
@@ -35,50 +35,8 @@
 			<source ng-src="{{ video.video_link | trusted }}" id="mp4Source" type="video/mp4">
 				Your browser does not support the video tag.
 			</video>
-			<p id="notesource">{{ video.note }} <span class="pull-right"><a ng-click="addReply()"> Add Reply  <span class="glyphicon glyphicon-plus"></span></a></span></p>
+			<p id="notesource">{{ video.note }} <span class="pull-right"><a ng-click="addVideo(video.id)"> Add Reply  <span class="glyphicon glyphicon-plus"></span></a></span></p>
 			<br>
-
-			<div class="row" ng-show="viewReply">
-
-				<div class="col-xs-12">
-					<h4 class="video-archives"><span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; Add Video Reply to <i>{{ video.title }}</i></h4>
-				</div>
-
-				<div class="col-xs-6">
-					<div class="form-group">
-						<label for="replyTitle">Title</label>
-						<input type="text" id="replyTitle" class="form-control" ng-model="replyTitle" required placeholder="title">
-					</div>
-				</div>
-
-				<div class="col-xs-6">
-					<div class="form-group">
-						<label for="replyFile">File input</label>
-						<input type="file" id="file" class="form-control" file required>
-					</div>
-				</div>
-
-				<div class="col-xs-6">
-					<div class="form-group">
-						<label for="replyNote">Note</label>
-						<textarea type="text" id="replyNote" class="form-control" ng-model="replyNote" required></textarea>
-					</div>
-				</div>				
-
-				<div class="col-xs-6" align="right">
-
-					<div class="progress">
-			          <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgressReply }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgressReply }}%;">
-			            {{ uploadProgressReply == 0 ? '' : uploadProgressReply + '%' }}
-			          </div>
-			        </div>
-			        <div class="pull-right">
-				        <button ng-disabled="replyTitle.$invalid || replyNote.$invalid || replyFile.$invalid" ng-click="upload(replyTitle, replyNote, 'true', video.id)">Upload</button>
-				        <button ng-click="cancelReply()">Cancel</button>
-			        </div>
-			        
-		        </div>
-		    </div>
 
 			<div ng-repeat="reply in video.replies">
 				{{ reply }} 
@@ -90,29 +48,48 @@
 
 	<div class="col-xs-12 col-sm-5" ng-show="viewVideo">
 
-		<h3 class="video-archives"><span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; Add Video</h3>
 
-		<div class="form-group">
-			<label for="videoTitle">Title</label>
-			<input type="text" id="videoTitle" class="form-control" ng-model="videoTitle" required placeholder="title">
-		</div>
-		<div class="form-group">
-			<label for="videoNote">Note</label>
-			<input type="text" id="videoNote" class="form-control" ng-model="videoNote" required placeholder="note">
-		</div>
+		<div class="row">
 
-		<div class="form-group">
-			<label for="videoFile">File input</label>
-			<input type="file" id="file" class="form-control" file required>
-		</div>
+				<div class="col-xs-12">
+					<h4 class="video-archives"><span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; Add Video <span ng-show="isReply">Reply</span> {{connectID}}</h4>
+				</div>
 
-        <!-- Progress Bar -->
-        <div class="progress" ng-show="uploadProgress">
-          <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress }}%;">
-            {{ uploadProgress == 0 ? '' : uploadProgress + '%' }}
-          </div>
-        </div>            
-        <a class="btn btn-primary btn-block btn-lg" ng-disabled="videoTitle.$invalid || videoNote.$invalid || file.$invalid" ng-click="upload(videoTitle, videoNote, 'false', '')">Upload</a>
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label for="videoTitle">Title</label>
+						<input type="text" id="videoTitle" class="form-control" ng-model="videoTitle" required placeholder="title">
+					</div>
+				</div>
+
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label for="file">File input</label>
+						<input type="file" id="file" class="form-control" file required>
+					</div>
+				</div>
+
+				<div class="col-xs-6">
+					<div class="form-group">
+						<label for="videoNote">Note</label>
+						<textarea type="text" id="videoNote" class="form-control" ng-model="videoNote" required></textarea>
+					</div>
+				</div>				
+
+				<div class="col-xs-6" align="right">
+
+					<div class="progress">
+			          <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress }}%;">
+			            {{ uploadProgress == 0 ? '' : uploadProgress + '%' }}
+			          </div>
+			        </div>
+			        <div class="pull-right">
+				        <button ng-disabled="videoTitle.$invalid || videoNote.$invalid || file.$invalid" ng-click="upload(videoTitle, videoNote, isReply, connectID)">Upload</button>
+				        <button ng-click="cancelReply()">Cancel</button>
+			        </div>
+			        
+		        </div>
+		    </div>
     </div>
 
 	
