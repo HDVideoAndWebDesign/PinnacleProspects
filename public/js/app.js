@@ -28,6 +28,12 @@
                 controllerAs: 'vm'
             })
 
+            .when('/scout', {
+                controller: 'ScoutController',
+                templateUrl: 'views/scout.html',
+                controllerAs: 'vm'
+            })
+
             .when('/login', {
                 controller: 'LoginController',
                 templateUrl: 'views/login.html',

@@ -227,10 +227,10 @@ img.left_icon{ float:left; background:none; margin:0 20px 0 0;}
 		  
 		.give-me-some-space { margin-right: 5px } 
 		  
-		  .list-group-item {
+/*		  .list-group-item {
 			background-color: transparent;
 			border: 1px solid #555;
-			}
+			}*/
 		  
 		/* Nav Bar */
 		  .bignav {  height: 140px; background: #fff;   }

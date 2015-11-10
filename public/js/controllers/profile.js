@@ -17,7 +17,7 @@
 		};
 
         // Simple get request example:
-		$http.get('/profile/' + $rootScope.globals.currentUser.username).
+		$http.get('api/profile/' + $rootScope.globals.currentUser.username).
 		  then(function(response) {
 		  	$rootScope.profile = response.data;
 		    	///  Get Profile's videos
@@ -36,7 +36,7 @@
 			    	$rootScope.profile.throws = []
 			    }
 		        // Get all users list for messages
-			    $http.get('/users/all').
+			    $http.get('api/users/all').
 					then(function(response) {
 						$rootScope.allUsers = response.data
 					}, function(response) {
@@ -49,7 +49,7 @@
 
 
 		$rootScope.getVideos = function(){
-			$http.get('/videos/' + $rootScope.profile.id).
+			$http.get('api/videos/' + $rootScope.profile.id).
 	          then(function(response) {
 	          	// got the video info
 	          	$rootScope.profile_videos = response.data;
@@ -59,7 +59,7 @@
 		}
 
 		$rootScope.getAnnouncements = function(){
-			$http.get('/announcements/').
+			$http.get('api/announcements/').
 	          then(function(response) {
 	          	// got the video info
 	          	$rootScope.announcements = response.data;
@@ -69,7 +69,7 @@
 		}
 
 		$rootScope.getMessages = function(){
-			$http.get('/messages/' + $rootScope.profile.id).
+			$http.get('api/messages/' + $rootScope.profile.id).
 				then(function(response) {
 					$rootScope.messages = response.data;
 					$rootScope.messages_count = response.data.length;
@@ -80,9 +80,9 @@
 
 
 		$rootScope.changeSeen = function(messageid, switchToggle) {
-	    	$http.put('/message/' + switchToggle + '/' + messageid).
+	    	$http.put('api/message/' + switchToggle + '/' + messageid).
 			  then(function(response) {
-			  	$http.get('/messages/' + $rootScope.profile.id).
+			  	$http.get('api/messages/' + $rootScope.profile.id).
 				  then(function(response) {
 				  	$rootScope.messages = response.data;
 				  	$rootScope.messages_count = response.data.length;
@@ -96,7 +96,7 @@
 
     	
 		$rootScope.updateProfile = function() {
-			$http.put('/profile/' + $rootScope.profile.id, $rootScope.profile).
+			$http.put('api/profile/' + $rootScope.profile.id, $rootScope.profile).
 				then(function(response) {
 					console.log($rootScope.profile);
 					toastr.success(response.data.msg);
@@ -113,7 +113,7 @@
 				$rootScope.showImage = false;
 			} else {
 				$rootScope.showImage = true;
-				$http.get('/videoauth/').
+				$http.get('api/videoauth/').
 				then(function(response) {
 				  $rootScope.creds = response.data;
 				}, function(response) {
@@ -135,7 +135,7 @@
 				"profile_image": $rootScope.profile.image,
 				"note": note
 			};
-			$http.post('/message/', $rootScope.newmessage).
+			$http.post('api/message/', $rootScope.newmessage).
 				then(function(response) {
 					$rootScope.newmessage = {};
 					toastr.success(response.data.msg);
@@ -176,7 +176,7 @@
 
                     $rootScope.profile.image = 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName;
 
-                    $http.put('/profile/' + $rootScope.profile.id, $rootScope.profile).
+                    $http.put('api/profile/' + $rootScope.profile.id, $rootScope.profile).
                       then(function(response) {
                         toastr.success('File Uploaded Successfully', 'Done');
                         $rootScope.showImage = false;

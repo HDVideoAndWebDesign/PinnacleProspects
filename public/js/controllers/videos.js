@@ -10,11 +10,11 @@
           $rootScope.sizeLimit      = 1058576000; // 1000MB in Bytes
           $rootScope.uploadProgress = 0;
           $rootScope.creds          = {};
-          $rootScope.selected_video = 'false';
+          $rootScope.selected_video = {};
 
           $rootScope.addVideo = function(parentID){
             if($rootScope.viewVideo === true){
-              //$rootScope.viewVideo = false;
+              $rootScope.viewVideo = false;
             } else {
               $rootScope.viewVideo = true;
               if(parentID != 0){
@@ -24,7 +24,7 @@
                 $rootScope.isReply = false;
                 $rootScope.connectID = '';
               }
-              $http.get('/videoauth/').
+              $http.get('api/videoauth/').
                 then(function(response) {
                   $rootScope.creds = response.data;
                 }, function(response) {
@@ -33,28 +33,53 @@
             }
           }
 
+          $rootScope.fixVid = function(video){
+            $('#videosource').attr('src', video);
+          }
+
           $rootScope.cancelReply = function() {
             $rootScope.viewVideo = false;
             $rootScope.videoTitle = '';
             $rootScope.videoNote = '';
+            $rootScope.connectID = '';
+          }
+
+          $rootScope.findReply = function(video){
+            $http.get('api/video_replies/' + video.id).
+              then(function(response) {
+                if(response.data.length > 0) {
+                  video.replies = response.data;
+                }
+              }, function(response) {
+                toastr.error(response.message);
+              });
           }
 
           $rootScope.getVideos = function(){
-            $http.get('/videos/' + $rootScope.globals.currentUser.userid).
+            $http.get('api/videos/' + $rootScope.globals.currentUser.userid).
               then(function(response) {
-                $rootScope.videos = response.data;
+                var videos = response.data;
+                for (var video of videos) {
+                  $rootScope.findReply(video);
+                }
+                $rootScope.videos = videos
+                $rootScope.selected_video = videos[0];
+                $rootScope.fixVid($rootScope.selected_video.video_link);
               }, function(response) {
                 toastr.error(response.message);
             });
           }
 
-          $rootScope.getVideo = function(videoid){
-            $http.get('/video/' + videoid).
-              then(function(response) {
-                $rootScope.selected_video = response.data;
-              }, function(response) {
-                toastr.error(response.message);
-            });
+          $rootScope.getVideo = function(video){
+
+            function getVideoByID(value){
+              return value.id == video.id;
+            }
+            var a = $rootScope.videos.filter(getVideoByID);
+
+            $rootScope.selected_video = a[0]
+            $rootScope.fixVid($rootScope.selected_video.video_link);
+
           }
 
           $rootScope.getVideos();
@@ -83,13 +108,13 @@
                   }
                   else {
                     console.log(data);
-                    console.log(uniqueFileName);
+                    
                     // Upload Successfully Finished, add the video to the users videos pile
 
                     $rootScope.nv = {};
                     
                     //console.log($rootScope.videoTitle+ ": " + $rootScope.videoNote)
-                    if(isReply == 'true'){
+                    if($rootScope.isReply){
                       $rootScope.nv = {
                         'note': videoNote,
                         'userid': $rootScope.globals.currentUser.userid,
@@ -97,10 +122,9 @@
                         'video_id': videoParent,
                         'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
                       }
-                      $http.post('/video_replies/', $rootScope.nv).
+                      $http.post('api/video_replies/', $rootScope.nv).
                         then(function(response) {
                           $rootScope.nv = {};
-                          toastr.success(response.message);
                           $rootScope.getVideos();
                           toastr.success('File Uploaded Successfully', 'Done');
                           $rootScope.addVideo();
@@ -114,10 +138,9 @@
                         'title': videoTitle,
                         'video_link': 'http://s3.amazonaws.com/' + $rootScope.creds.bucket + '/' + uniqueFileName
                       }
-                      $http.post('/videos/', $rootScope.nv).
+                      $http.post('api/videos/', $rootScope.nv).
                         then(function(response) {
                           $rootScope.nv = {};
-                          toastr.success(response.message);
                           $rootScope.getVideos();
                           toastr.success('File Uploaded Successfully', 'Done');
                           $rootScope.addVideo();
@@ -140,7 +163,47 @@
               }
               else {
                 // No File Selected
-                toastr.error('Please select a file to upload');
+
+                if($rootScope.isReply){
+                  //  No file, but content to be added (for non video replies i guess)
+                  $rootScope.nv = {
+                  'note': videoNote,
+                  'userid': $rootScope.globals.currentUser.userid,
+                  'title': videoTitle,
+                  'video_link': '',
+                  'video_id': videoParent,
+                  }
+                  $http.post('api/video_replies/', $rootScope.nv).
+                    then(function(response) {
+                      $rootScope.nv = {};
+                      toastr.success(response.message);
+                      $rootScope.getVideos();
+                      toastr.success('File Uploaded Successfully', 'Done');
+                      $rootScope.addVideo();
+                    }, function(response) {
+                      toastr.error(response.message);
+                  });
+                } else {
+                  ///  No file, but non video content to be added
+                  $rootScope.nv = {
+                  'note': videoNote,
+                  'userid': $rootScope.globals.currentUser.userid,
+                  'title': videoTitle,
+                  'video_link': '',
+                  }
+                  $http.post('api/videos/', $rootScope.nv).
+                    then(function(response) {
+                      $rootScope.nv = {};
+                      toastr.success(response.message);
+                      $rootScope.getVideos();
+                      toastr.success('Added Successfully', 'Done');
+                      $rootScope.addVideo();
+                    }, function(response) {
+                      toastr.error(response.message);
+                  });
+
+                }
+                
               }
             }
 

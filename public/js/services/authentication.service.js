@@ -19,9 +19,11 @@
 
             /* Use this for real authentication
              ----------------------------------------------*/
-            $http.post('/login', { username: username, password: password })
+            $http.post('/api/login', { username: username, password: password })
                 .success(function (response) {
+                    console.log(response);
                     $rootScope.userid = response.userid,
+                    $rootScope.usertype = response.usertype,
                     callback(response);
                 });
 
@@ -34,7 +36,8 @@
                 currentUser: {
                     username: username,
                     authdata: authdata,
-                    userid: $rootScope.userid
+                    userid: $rootScope.userid,
+                    usertype: $rootScope.usertype,
                 }
             };
 

@@ -1,0 +1,985 @@
+<div class="row black-on-white  slick_form">
+
+	<h3>MyPinnacle Scout</h3>
+
+	<style>
+		#scout td { padding: 5px; text-align: center; }
+		#scout td, #scout th { border: 1px solid #dedede }
+		#scout .mainhead { font-weight: bold; background-color: #888; text-align: left; }
+		#scout .head { font-weight: bold; background-color: #222; text-align: left; }
+		#scout th { padding: 5px; text-align: center !important; font-size: 1.2em; }
+		#scout .left { text-align: left; }
+	</style>
+
+	<div class="row" ng-show="disabled">
+		<div class="col-xs-12">
+			<div class="well">
+				<select ng-model="scout.player_type" ng-blur="updateScout(scout)">
+					<option value="Position">Position</option>
+					<option value="Pitcher">Pitcher</option>
+					<option value="Both">Both</option>
+				</select>
+
+				<div class="checkbox-inline">
+					<input type="checkbox" ng-blur="updateScout(scout)" ng-model="scout.showOutfield"> Show Outfield
+				</div> | 
+
+				<div class="checkbox-inline">
+					<input type="checkbox"  ng-blur="updateScout(scout)" ng-model="scout.showInfield"> Show Infield
+				</div> | 
+
+				<div class="checkbox-inline">
+					<input type="checkbox" ng-blur="updateScout(scout)" ng-model="scout.showHitting"> Show Hitting
+				</div> | 
+
+				<div class="checkbox-inline">
+					<input type="checkbox" ng-blur="updateScout(scout)" ng-model="scout.showCatcher"> Show Catcher
+				</div>
+			</div>
+		</div>
+	</div>
+
+<div class="row">
+		<div class="col-sm-12 col-sm-4">
+		
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th class="mainhead" colspan="2">{{ profile.name }}</th>
+			</tr>
+			<tr>
+				<td class="head">Scout: </td>
+				<td class="left">{{ profile.scout }}</td>
+			</tr>
+			<tr>
+				<td class="head">School: </td>
+				<td class="left">{{ profile.high_school }}</td>
+			</tr>
+			<tr>
+				<td class="head">College: </td>
+				<td class="left">{{ profile.college }}</td>
+			</tr>
+			<tr>
+				<td class="head">Grad Date: </td>
+				<td class="left">{{ profile.grad_year }}</td>
+			</tr>
+			<tr>
+				<td class="head">Class/Eligibility: </td>
+				<td class="left">{{ profile.class }}/{{profile.eligible}}</td>
+			</tr>
+			
+			<tr>
+				<td class="head">Club/Nat'l Team: </td>
+				<td class="left">{{ profile.team }}</td>
+			</tr>
+			<tr>
+				<td class="head">Phone: </td>
+				<td class="left">
+					<div ng-repeat="contact in profile.contact | limitTo: 1">
+							{{ contact.phone }}
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="head">Address: </td>
+				<td class="left">
+				<div ng-repeat="contact in profile.contact | limitTo: 1">
+							{{ contact.address }}<br>
+							{{ contact.city }}, {{ contact.state }} {{ contact.zipcode }}
+					</div>
+				</td>
+			</tr>
+			</table>
+		</div>
+		
+		
+		
+		
+		<div class="col-sm-12 col-sm-4">
+		
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Personal</th>
+			</tr>
+			<tr>
+				<td class="head">Positions: </td>
+				<td>
+					<div ng-repeat="position in profile.position | limitTo: 1">
+							{{ position.position }}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="head">DOB: </td>
+				<td>{{ profile.dob }}</td>
+			</tr>
+			<tr>
+				<td class="head">Height: </td>
+				<td>
+					<div ng-repeat="height in profile.height | limitTo: 1">
+							{{ height.height }}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="head">Weight: </td>
+				<td>
+				<div ng-repeat="weight in profile.weight | limitTo: 1">
+							{{ weight.weight }}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="head">Bats: </td>
+				<td>{{ profile.bats }}</td>
+			</tr>
+			<tr>
+				<td class="head">Throws: </td>
+				<td>{{ profile.throws }}</td>
+			</tr>
+
+			</table>
+		</div>
+		
+
+		<div class="col-sm-12 col-sm-4">
+		<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Scouting</th>
+			</tr>
+			<tr>
+				<td class="head">Role: </td>
+				<td><input ng-model="scout.role" size="{{ scout.role.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			<tr>
+				<td class="head">OFP: </td>
+				<td><input ng-model="scout.ofp" size="{{ scout.ofp.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			<tr>
+				<td class="head">Makeup: </td>
+				<td><input ng-model="scout.makeup" size="{{ scout.makeup.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			<tr>
+				<td class="head">Date Completed: </td>
+				<td><input ng-model="scout.date_completed" size="{{ scout.date_completed.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			<tr>
+				<td class="head">Report Count: </td>
+				<td><input ng-model="scout.report_count" size="{{ scout.report_count.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			<tr>
+				<td class="head">Games Seen: </td>
+				<td><input ng-model="scout.games_seen" size="{{ scout.games_seen.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			<tr>
+				<td class="head">At Bats Seen: </td>
+				<td><input ng-model="scout.ab_seen" size="{{ scout.ab_seen.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+			
+			<tr>
+				<td class="head">Dates Seen: </td>
+				<td colspan="3"><input ng-model="scout.dates_seen" size="{{ scout.dates_seen.length }}" ng-blur="updateScout(scout)"></td>
+			</tr>
+	</table>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-xs-12">
+			<table id="scout" class="table table-responsive" ng-if="scout.player_type == 'Position' || scout.player_type == 'Both'">
+				<tr>
+					<th class="mainhead">Ratings</th>
+					<th class="mainhead">P</th>
+					<th class="mainhead">F</th>
+				</tr>
+				<tr>
+					<td class="head">Hitting Ability:</td>
+					<td><input ng-model="scout.ratings_hitting_ability_p" size="{{ scout.ratings_hitting_ability_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_hitting_ability_f" size="{{ scout.ratings_hitting_ability_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Raw Power:</td>
+					<td><input ng-model="scout.ratings_raw_power_p" size="{{ scout.ratings_raw_power_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_raw_power_f" size="{{ scout.ratings_raw_power_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Game Power:</td>
+					<td><input ng-model="scout.ratings_game_power_p" size="{{ scout.ratings_game_power_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_game_power_f" size="{{ scout.ratings_game_power_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Running Speed:</td>
+					<td><input ng-model="scout.ratings_running_speed_p" size="{{ scout.ratings_running_speed_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_running_speed_f" size="{{ scout.ratings_running_speed_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Base Running:</td>
+					<td><input ng-model="scout.ratings_base_running_p" size="{{ scout.ratings_base_running_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_base_running_f" size="{{ scout.ratings_base_running_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Arm Strength:</td>
+					<td><input ng-model="scout.ratings_arm_strength_p" size="{{ scout.ratings_arm_strength_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_arm_strength_f" size="{{ scout.ratings_arm_strength_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Arm Accuracy:</td>
+					<td><input ng-model="scout.ratings_arm_accuracy_p" size="{{ scout.ratings_arm_accuracy_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_arm_accuracy_f" size="{{ scout.ratings_arm_accuracy_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Fielding:</td>
+					<td><input ng-model="scout.ratings_fielding_p" size="{{ scout.ratings_fielding_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fielding_f" size="{{ scout.ratings_fielding_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Range:</td>
+					<td><input ng-model="scout.ratings_range_p" size="{{ scout.ratings_range_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_range_f" size="{{ scout.ratings_range_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+		</table>
+
+			<table id="scout" class="table table-responsive" ng-if="scout.player_type == 'Pitcher' || scout.player_type == 'Both'">
+				<tr>
+					<th class="mainhead">Ratings</th>
+					<th class="mainhead">P</th>
+					<th class="mainhead">F</th>
+					<th class="mainhead">H</th>
+					<th class="mainhead">L</th>
+					<th class="mainhead">P Cmd</th>
+					<th class="mainhead">F Cmd</th>
+				</tr>
+				<tr>
+					<td class="head">FB Velocity:</td>
+					<td><input ng-model="scout.ratings_fb_velocity_p" size="{{ scout.ratings_fb_velocity_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_velocity_f" size="{{ scout.ratings_fb_velocity_f.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_velocity_h" size="{{ scout.ratings_fb_velocity_h.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_velocity_l" size="{{ scout.ratings_fb_velocity_l.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_velocity_pc" size="{{ scout.ratings_fb_velocity_pc.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_velocity_fc" size="{{ scout.ratings_fb_velocity_fc.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+				
+				<tr>
+					<td class="head">FB Movement:</td>
+					<td><input ng-model="scout.ratings_fb_movement_p" size="{{ scout.ratings_fb_movement_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_movement_f" size="{{ scout.ratings_fb_movement_f.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_fb_movement_n" size="{{ scout.ratings_fb_movement_n.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Curveball:</td>
+					<td><input ng-model="scout.ratings_curve_p" size="{{ scout.ratings_curve_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_curve_f" size="{{ scout.ratings_curve_f.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_curve_h" size="{{ scout.ratings_curve_h.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_curve_l" size="{{ scout.ratings_curve_l.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_curve_pc" size="{{ scout.ratings_curve_pc.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_curve_fc" size="{{ scout.ratings_curve_fc.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+				
+				<tr>
+					<td class="head">Slider:</td>
+					<td><input ng-model="scout.ratings_slider_p" size="{{ scout.ratings_slider_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_slider_f" size="{{ scout.ratings_slider_f.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_slider_h" size="{{ scout.ratings_slider_h.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_slider_l" size="{{ scout.ratings_slider_l.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_slider_pc" size="{{ scout.ratings_slider_pc.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_slider_fc" size="{{ scout.ratings_slider_fc.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+				
+				<tr>
+					<td class="head">Changeup:</td>
+					<td><input ng-model="scout.ratings_change_p" size="{{ scout.ratings_change_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_change_f" size="{{ scout.ratings_change_f.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_change_h" size="{{ scout.ratings_change_h.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_change_l" size="{{ scout.ratings_change_l.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_change_pc" size="{{ scout.ratings_change_pc.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_change_fc" size="{{ scout.ratings_change_fc.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+				
+				<tr>
+					<td class="head">Other:</td>
+					<td><input ng-model="scout.ratings_other_p" size="{{ scout.ratings_other_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_other_f" size="{{ scout.ratings_other_f.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_other_h" size="{{ scout.ratings_other_h.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_other_l" size="{{ scout.ratings_other_l.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_other_pc" size="{{ scout.ratings_other_pc.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_other_fc" size="{{ scout.ratings_other_fc.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Control:</td>
+					<td><input ng-model="scout.ratings_control_p" size="{{ scout.ratings_control_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_control_f" size="{{ scout.ratings_control_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Pitchability:</td>
+					<td><input ng-model="scout.ratings_pitchability_p" size="{{ scout.ratings_pitchability_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_pitchability_f" size="{{ scout.ratings_pitchability_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+				
+				<tr>
+					<td class="head">Delivery:</td>
+					<td><input ng-model="scout.ratings_delivery_p" size="{{ scout.ratings_delivery_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_delivery_f" size="{{ scout.ratings_delivery_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+				
+				<tr>
+					<td class="head">Arm Action:</td>
+					<td><input ng-model="scout.ratings_arm_action_p" size="{{ scout.ratings_arm_action_p.length }}" ng-blur="updateScout(scout)"></td>
+					<td><input ng-model="scout.ratings_arm_action_f" size="{{ scout.ratings_arm_action_f.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+		</table>
+			
+		</div>	
+		
+		
+		<div class="col-xs-12 col-sm-6" ng-if="scout.player_type == 'Position' || scout.player_type == 'Both'">
+
+			<table id="scout" class="table table-responsive" >
+				
+					<tr>
+						<th class="mainhead" colspan="2">Running and Hitting</th>
+					</tr>
+					<tr>
+						<td class="head">Hit Type:</td>
+						<td><input ng-model="scout.hit_type" size="{{ scout.hit_type.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+					<tr>
+						<td class="head">Hit Approach:</td>
+						<td><input ng-model="scout.hit_approach" size="{{ scout.hit_approach.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+					<tr>
+						<td class="head">Time to 1B:</td>
+						<td><input ng-model="scout.time_to_1b" size="{{ scout.time_to_1b.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+
+					<tr>
+						<td class="head">Time to Right:</td>
+						<td><input ng-model="scout.time_to_right" size="{{ scout.time_to_right.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+
+			</table>
+
+		</div>
+		
+		<div class="col-xs-12 col-sm-6" ng-if="scout.player_type == 'Pitcher' || scout.player_type == 'Both'">
+			<table id="scout" class="table table-responsive" >
+
+					<tr>
+						<th class="mainhead" colspan="2">Pitching</th>
+					</tr>
+					<tr>
+						<td class="head">Arm Slot:</td>
+						<td><input ng-model="scout.arm_slot" size="{{ scout.arm_slot.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+
+					<tr>
+						<td class="head">Delivery:</td>
+						<td><input ng-model="scout.delivery" size="{{ scout.delivery.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+				
+					<tr>
+						<td class="head">Arm Action:</td>
+						<td><input ng-model="scout.arm_action" size="{{ scout.arm_action.length }}" ng-blur="updateScout(scout)"></td>
+					</tr>
+
+		</table>
+		</div>
+		
+		
+		
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+					<tr>
+						<th class="mainhead" colspan="2">Makeup</th>
+					</tr>
+				<tr>
+					<td class="head">Athleticism:</td>
+					<td><input ng-model="scout.makeup_athleticism" size="{{ scout.makeup_athleticism.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Aptitude:</td>
+					<td><input ng-model="scout.makeup_aptitude" size="{{ scout.makeup_aptitude.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Character:</td>
+					<td><input ng-model="scout.makeup_character" size="{{ scout.makeup_character.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Dedication:</td>
+					<td><input ng-model="scout.makeup_dedication" size="{{ scout.makeup_dedication.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Instinct:</td>
+					<td><input ng-model="scout.makeup_instinct" size="{{ scout.makeup_instinct.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Aggressiveness:</td>
+					<td><input ng-model="scout.makeup_aggressiveness" size="{{ scout.makeup_aggressiveness.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Confidence:</td>
+					<td><input ng-model="scout.makeup_confidence" size="{{ scout.makeup_confidence.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Maturity:</td>
+					<td><input ng-model="scout.makeup_maturity" size="{{ scout.makeup_maturity.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+			
+				<tr>
+					<td class="head">Competitiveness:</td>
+					<td><input ng-model="scout.makeup_competitiveness" size="{{ scout.makeup_competitiveness.length }}" ng-blur="updateScout(scout)"></td>
+				</tr>
+		</table>
+		</div>	
+	</div>
+
+	
+	<div class="row" ng-show="scout.showCatcher">	
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive" >
+			<tr>
+				<th colspan="2" class="mainhead">Catcher Pros {{disabled}}</th>
+			</tr>
+			<tr ng-click="scout.catcher_1 = !scout.catcher_1; updateScout(scout)">
+				<td class="head">Shows a primary and secondary position</td>
+				<td><span ng-if="scout.catcher_1" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_2 = !scout.catcher_2; updateScout(scout)">
+				<td class="head">Footwork in primary is simple/balanced</td>
+				<td><span ng-if="scout.catcher_2" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_3 = !scout.catcher_3; updateScout(scout)">
+				<td class="head">Footwork in secondary is simple/balanced</td>
+				<td><span ng-if="scout.catcher_3" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_4 = !scout.catcher_4; updateScout(scout)">
+				<td class="head">Hands are soft and strong</td>
+				<td><span ng-if="scout.catcher_4" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_5 = !scout.catcher_5; updateScout(scout)">
+				<td class="head">Stops the ball in the strikezone</td>
+				<td><span ng-if="scout.catcher_5" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_6 = !scout.catcher_6; updateScout(scout)">
+				<td class="head">Stays balanced during the catch</td>
+				<td><span ng-if="scout.catcher_6" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_7 = !scout.catcher_7; updateScout(scout)">
+				<td class="head">Gets into a good blocking position</td>
+				<td><span ng-if="scout.catcher_7" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_8 = !scout.catcher_8; updateScout(scout)">
+				<td class="head">Reacts to ball in dirt easily</td>
+				<td><span ng-if="scout.catcher_8" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_9 = !scout.catcher_9; updateScout(scout)">
+				<td class="head">Gets to his feet easily after block</td>
+				<td><span ng-if="scout.catcher_9" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_10 = !scout.catcher_10; updateScout(scout)">
+				<td class="head">Clean transition to throwing hand</td>
+				<td><span ng-if="scout.catcher_10" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_11 = !scout.catcher_11; updateScout(scout)">
+				<td class="head">Simple throwing action</td>
+				<td><span ng-if="scout.catcher_11" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_12 = !scout.catcher_12; updateScout(scout)">
+				<td class="head">Gains ground to throw</td>
+				<td><span ng-if="scout.catcher_12" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_13 = !scout.catcher_13; updateScout(scout)">
+				<td class="head">Ball keeps flight through the base</td>
+				<td><span ng-if="scout.catcher_13" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_14 = !scout.catcher_14; updateScout(scout)" >
+				<td class="head">Body size is durable</td>
+				<td><span ng-if="scout.catcher_14" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_15 = !scout.catcher_15; updateScout(scout)" >
+				<td class="head">Made somebody say 'wow'</td>
+				<td><span ng-if="scout.catcher_15" class="glyphicon glyphicon-ok"></span></td>
+			</tr>	
+			</table>
+		</div>
+
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Catcher Cons</th>
+			</tr>
+			<tr ng-click="scout.catcher_16 = !scout.catcher_16; updateScout(scout)" >
+			<td class="head">No difference in primary and secondary</td>
+				<td><span ng-if="scout.catcher_16" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_17 = !scout.catcher_17; updateScout(scout)" >
+			<td class="head">Footwork does not provide balance</td>
+				<td><span ng-if="scout.catcher_17" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_18 = !scout.catcher_18; updateScout(scout)" >
+				<td class="head">Hands are heavy at the catch</td>
+				<td><span ng-if="scout.catcher_18" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_19 = !scout.catcher_19; updateScout(scout)" >
+				<td class="head">Does not have strong hands</td>
+				<td><span ng-if="scout.catcher_19" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_20 = !scout.catcher_20; updateScout(scout)" >
+				<td class="head">Takes strikes out of strike zone</td>
+				<td><span ng-if="scout.catcher_20" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_21 = !scout.catcher_21; updateScout(scout)" >
+				<td class="head">Off balance when receiving</td>
+				<td><span ng-if="scout.catcher_21" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_22 = !scout.catcher_22; updateScout(scout)" >
+				<td class="head">Late reaction to block position</td>
+				<td><span ng-if="scout.catcher_22" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_23 = !scout.catcher_23; updateScout(scout)" >
+				<td class="head">Does not get into efficient block position</td>
+				<td><span ng-if="scout.catcher_23" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_24 = !scout.catcher_24; updateScout(scout)" >
+				<td class="head">Struggles to get up after block</td>
+				<td><span ng-if="scout.catcher_24" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_25 = !scout.catcher_25; updateScout(scout)" >
+				<td  class="head">Trouble getting ball out of glove</td>
+				<td><span ng-if="scout.catcher_25" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_26 = !scout.catcher_26; updateScout(scout)" >
+				<td class="head">Arm action breaks rhythm</td>
+				<td><span ng-if="scout.catcher_26" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_27 = !scout.catcher_27; updateScout(scout)" >
+				<td class="head">Loses ground to throwing position</td>
+				<td><span ng-if="scout.catcher_27" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_28 = !scout.catcher_28; updateScout(scout)" >
+				<td  class="head">Ball loses flight before the base</td>
+				<td><span ng-if="scout.catcher_28" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_29 = !scout.catcher_29; updateScout(scout)"  >
+				<td class="head">Body size does not project as durable</td>
+				<td><span ng-if="scout.catcher_29" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.catcher_30 = !scout.catcher_30; updateScout(scout)">
+				<td class="head">Was not noticeable</td>
+				<td><span ng-if="scout.catcher_30" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+	</div>
+
+	
+	<div class="row"  ng-show="scout.showHitting">	
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Hitting Pros</th>
+			</tr>
+			<tr ng-click="scout.hitting_1 = !scout.hitting_1; updateScout(scout)">
+				<td class="head">Starts relaxed</td>
+				<td><span ng-if="scout.hitting_1" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_2 = !scout.hitting_2; updateScout(scout)" >
+				<td class="head">Repeats his load</td>
+				<td><span ng-if="scout.hitting_2" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_3 = !scout.hitting_3; updateScout(scout)" >
+				<td class="head">Gets into hitting position on time</td>
+				<td><span ng-if="scout.hitting_3" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_4 = !scout.hitting_4; updateScout(scout)" >
+				<td class="head">Hands don't seperate too early</td>
+				<td><span ng-if="scout.hitting_4" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_5 = !scout.hitting_5; updateScout(scout)" >
+				<td class="head">Keeps rhythm from load to swing</td>
+				<td><span ng-if="scout.hitting_5" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_6 = !scout.hitting_6; updateScout(scout)" >
+				<td class="head">Has time to track the ball</td>
+				<td><span ng-if="scout.hitting_6" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_7 = !scout.hitting_7; updateScout(scout)" >
+				<td class="head">Swing has short path to the ball</td>
+				<td><span ng-if="scout.hitting_7" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_8 = !scout.hitting_8; updateScout(scout)" >
+				<td class="head">Weight transfers under control</td>
+				<td><span ng-if="scout.hitting_8" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_9 = !scout.hitting_9; updateScout(scout)" >
+				<td class="head">Hits against a firm front side</td>
+				<td><span ng-if="scout.hitting_9" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_10 = !scout.hitting_10; updateScout(scout)" >
+				<td class="head">Barrel stays in the zone naturally</td>
+				<td><span ng-if="scout.hitting_10" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_11 = !scout.hitting_11; updateScout(scout)" >
+				<td class="head">Ability to hit for average at next level</td>
+				<td><span ng-if="scout.hitting_11" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_12 = !scout.hitting_12; updateScout(scout)" >
+				<td class="head">Ability to hit for power at the next level</td>
+				<td><span ng-if="scout.hitting_12" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_13 = !scout.hitting_13; updateScout(scout)" >
+				<td class="head">Drives gaps</td>
+				<td><span ng-if="scout.hitting_13" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_14 = !scout.hitting_14; updateScout(scout)" >
+				<td class="head">Made somebody say 'wow'</td>
+				<td><span ng-if="scout.hitting_14" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Hitter Cons</th>
+			</tr>
+			<tr ng-click="scout.hitting_16 = !scout.hitting_16; updateScout(scout)">
+			<td class="head">Tense in stance</td>
+				<td><span ng-if="scout.hitting_16" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_17 = !scout.hitting_17; updateScout(scout)">
+			<td class="head">Does not repeat his load</td>
+				<td><span ng-if="scout.hitting_17" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_18 = !scout.hitting_18; updateScout(scout)">
+				<td class="head">Late getting into hitting position</td>
+				<td><span ng-if="scout.hitting_18" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_19 = !scout.hitting_19; updateScout(scout)">
+				<td class="head">Too early into hitting position</td>
+				<td><span ng-if="scout.hitting_19" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_20 = !scout.hitting_20; updateScout(scout)">
+				<td class="head">Hands seperate too early and get lost</td>
+				<td><span ng-if="scout.hitting_20" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_21 = !scout.hitting_21; updateScout(scout)">
+				<td class="head">Loses rhythm from load to swing</td>
+				<td><span ng-if="scout.hitting_21" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_22 = !scout.hitting_22; updateScout(scout)">
+				<td class="head">Doesn't have time to track ball</td>
+				<td><span ng-if="scout.hitting_22" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_23 = !scout.hitting_23; updateScout(scout)">
+				<td class="head">Weight sticks on backside</td>
+				<td><span ng-if="scout.hitting_23" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_24 = !scout.hitting_24; updateScout(scout)">
+				<td class="head">Swing path is long to the ball</td>
+				<td><span ng-if="scout.hitting_24" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_25 = !scout.hitting_25; updateScout(scout)">
+				<td class="head">Front side is weak</td>
+				<td><span ng-if="scout.hitting_25" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_26 = !scout.hitting_26; updateScout(scout)">
+				<td class="head">Barrel is in and out of zone quickly</td>
+				<td><span ng-if="scout.hitting_26" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_27 = !scout.hitting_27; updateScout(scout)">
+				<td class="head">Does not have potential for power</td>
+				<td><span ng-if="scout.hitting_27" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_28 = !scout.hitting_28; updateScout(scout)">
+				<td class="head">Does not drive through the ball naturally</td>
+				<td><span ng-if="scout.hitting_28" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.hitting_29 = !scout.hitting_29; updateScout(scout)">
+				<td class="head">Was not noticeable</td>
+				<td><span ng-if="scout.hitting_29" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="row"  ng-show="scout.showInfield">	
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Infield Pros</th>
+			</tr>
+			<tr ng-click="scout.infield_1 = !scout.infield_1; updateScout(scout)">
+				<td class="head">Efficient first step in correct direction</td>
+				<td><span ng-if="scout.infield_1" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_2 = !scout.infield_2; updateScout(scout)">
+				<td class="head">Feet are under control at catch</td>
+				<td><span ng-if="scout.infield_2" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_3 = !scout.infield_3; updateScout(scout)">
+				<td class="head">Hands are under control at catch</td>
+				<td><span ng-if="scout.infield_3" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_4 = !scout.infield_4; updateScout(scout)">
+				<td class="head">Glove is relaxed and under the ball</td>
+				<td><span ng-if="scout.infield_4" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_5 = !scout.infield_5; updateScout(scout)">
+				<td class="head">Catch is made out in front of body</td>
+				<td><span ng-if="scout.infield_5" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_6 = !scout.infield_6; updateScout(scout)">
+				<td class="head">Has flow through the ball</td>
+				<td><span ng-if="scout.infield_6" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_7 = !scout.infield_7; updateScout(scout)">
+				<td class="head">Clean transition to throwing hand</td>
+				<td><span ng-if="scout.infield_7" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_8 = !scout.infield_8; updateScout(scout)">
+				<td class="head">Easy Arm Action</td>
+				<td><span ng-if="scout.infield_8" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_9 = !scout.infield_9; updateScout(scout)">
+				<td class="head">Strong Arm</td>
+				<td><span ng-if="scout.infield_9" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_10 = !scout.infield_10; updateScout(scout)">
+				<td class="head">Accurate Arm</td>
+				<td><span ng-if="scout.infield_10" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_11 = !scout.infield_11; updateScout(scout)">
+				<td class="head">Has the ability to Catch, Step and Throw</td>
+				<td><span ng-if="scout.infield_11" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_12 = !scout.infield_12; updateScout(scout)">
+				<td class="head">Made somebody say 'Wow!'</td>
+				<td><span ng-if="scout.infield_12" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Infield Cons</th>
+			</tr>
+			<tr ng-click="scout.infield_16 = !scout.infield_16; updateScout(scout)">
+			<td class="head">Slow first step losing ground</td>
+				<td><span ng-if="scout.infield_16" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_17 = !scout.infield_17; updateScout(scout)">
+			<td class="head">Feet are out of control at catch</td>
+				<td><span ng-if="scout.infield_17" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_18 = !scout.infield_18; updateScout(scout)">
+			<td class="head">Hands are heavy at the catch</td>
+				<td><span ng-if="scout.infield_18" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_19 = !scout.infield_19; updateScout(scout)">
+			<td class="head">Hands start above and jab to ball</td>
+				<td><span ng-if="scout.infield_19" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_20 = !scout.infield_20; updateScout(scout)">
+			<td class="head">Catch is made under body</td>
+				<td><span ng-if="scout.infield_20" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_21 = !scout.infield_21; updateScout(scout)">
+				<td class="head">Does not move through the ball</td>
+				<td><span ng-if="scout.infield_21" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_22 = !scout.infield_22; updateScout(scout)">
+				<td class="head">Dificult transition to throw hand</td>
+				<td><span ng-if="scout.infield_22" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_23 = !scout.infield_23; updateScout(scout)">
+				<td class="head">Long arm action</td>
+				<td><span ng-if="scout.infield_23" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_24 = !scout.infield_24; updateScout(scout)">
+				<td class="head">Weak arm</td>
+				<td><span ng-if="scout.infield_24" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_25 = !scout.infield_25; updateScout(scout)">
+				<td class="head">Inaccurate arm</td>
+				<td><span ng-if="scout.infield_25" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_26 = !scout.infield_26; updateScout(scout)">
+				<td class="head">Can't catch and throw in 1 step</td>
+				<td><span ng-if="scout.infield_26" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.infield_27 = !scout.infield_27; updateScout(scout)">
+				<td class="head">Was not noticeable</td>
+				<td><span ng-if="scout.infield_27" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="row" ng-show="scout.showOutfield">	
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Outfield Pros</th>
+			</tr>
+			<tr ng-click="scout.outfield_1 = !scout.outfield_1; updateScout(scout)">
+				<td class="head">Efficient reads off the bat</td>
+				<td><span ng-if="scout.outfield_1" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_2 = !scout.outfield_2; updateScout(scout)">
+				<td class="head">Takes proper angles to the ball</td>
+				<td><span ng-if="scout.outfield_2" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_3 = !scout.outfield_3; updateScout(scout)">
+				<td class="head">Feet are under control at the catch</td>
+				<td><span ng-if="scout.outfield_3" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_4 = !scout.outfield_4; updateScout(scout)">
+				<td class="head">Positions body well for catch</td>
+				<td><span ng-if="scout.outfield_4" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_5 = !scout.outfield_5; updateScout(scout)">
+				<td class="head">Proper footwork after the catch</td>
+				<td><span ng-if="scout.outfield_5" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_6 = !scout.outfield_6; updateScout(scout)">
+				<td class="head">Clean transfer to throwing hand</td>
+				<td><span ng-if="scout.outfield_6" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_7 = !scout.outfield_7; updateScout(scout)">
+				<td class="head">Clean arm action, creates backspin</td>
+				<td><span ng-if="scout.outfield_7" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_8 = !scout.outfield_8; updateScout(scout)">
+				<td class="head">Has a rhythm from catch to throw</td>
+				<td><span ng-if="scout.outfield_8" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_9 = !scout.outfield_9; updateScout(scout)">
+				<td class="head">Strong arm</td>
+				<td><span ng-if="scout.outfield_9" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_10 = !scout.outfield_10; updateScout(scout)">
+				<td class="head">Accurate arm</td>
+				<td><span ng-if="scout.outfield_10" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_11 = !scout.outfield_11; updateScout(scout)">
+				<td class="head">Made someone say 'wow'</td>
+				<td><span ng-if="scout.outfield_11" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+
+		<div class="col-xs-12 col-sm-6">
+			<table id="scout" class="table table-responsive">
+			<tr>
+				<th colspan="2" class="mainhead">Outfield Cons</th>
+			</tr>
+			<tr ng-click="scout.outfield_12 = !scout.outfield_12; updateScout(scout)">
+			<td class="head">Late jump to the ball off bat</td>
+				<td><span ng-if="scout.outfield_12" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_13 = !scout.outfield_13; updateScout(scout)">
+			<td class="head">Angles to the ball are too short</td>
+				<td><span ng-if="scout.outfield_13" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_14 = !scout.outfield_14; updateScout(scout)">
+				<td class="head">Feet are out of control at the catch</td>
+				<td><span ng-if="scout.outfield_14" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_15 = !scout.outfield_15; updateScout(scout)">
+				<td class="head">In a bad position to make catch</td>
+				<td><span ng-if="scout.outfield_15" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_16 = !scout.outfield_16; updateScout(scout)">
+				<td class="head">Proper footwork after the catch</td>
+				<td><span ng-if="scout.outfield_16" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_17 = !scout.outfield_17; updateScout(scout)">
+				<td class="head">Difficult transfer to throwing hand</td>
+				<td><span ng-if="scout.outfield_17" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_18 = !scout.outfield_18; updateScout(scout)">
+				<td class="head">Arm action creates loss of ball flight</td>
+				<td><span ng-if="scout.outfield_18" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_19 = !scout.outfield_19; updateScout(scout)">
+				<td class="head">Loses momentum from catch to throw</td>
+				<td><span ng-if="scout.outfield_19" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_20 = !scout.outfield_20; updateScout(scout)">
+				<td class="head">Weak arm</td>
+				<td><span ng-if="scout.outfield_20" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_21 = !scout.outfield_21; updateScout(scout)">
+				<td class="head">Inaccurate arm</td>
+				<td><span ng-if="scout.outfield_21" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			<tr ng-click="scout.outfield_22 = !scout.outfield_22; updateScout(scout)">
+				<td class="head">Was not noticeable</td>
+				<td><span ng-if="scout.outfield_22" class="glyphicon glyphicon-ok"></span></td>
+			</tr>
+			</table>
+		</div>
+	</div>
+
+	
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<table id="scout" class="table table-responsive">	
+			<tr>
+				<td class="mainhead" colspan="6">Physical Description: (Injuries, Glasses, Contacts, Growth Potential, Overall Strength)</td>
+			</tr>	
+			<tr>
+				<td colspan="6" class="left">
+				<textarea ng-model="scout.note" rows="5" style="max-width: 100%; width: 100%" ng-blur="updateScout(scout)" class="ng-pristine ng-valid"></textarea>
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="head" colspan="6">Abilities:</td>
+			</tr>
+			<tr>
+				<td colspan="6" class="left">
+				<textarea ng-model="scout.note2" rows="5" style="max-width: 100%; width: 100%" ng-blur="updateScout(scout)" class="ng-pristine ng-valid"></textarea>
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="head" colspan="6">Weaknesses:</td>
+			</tr>
+			<tr>
+				<td colspan="6" class="left">
+				<textarea ng-model="scout.note3" rows="5" style="max-width: 100%; width: 100%" ng-blur="updateScout(scout)" class="ng-pristine ng-valid"></textarea>
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="head" colspan="6">Signability and Player Summation:</td>
+			</tr>
+			<tr>
+				<td colspan="6" class="left">
+				<textarea ng-model="scout.note4" rows="5" style="max-width: 100%; width: 100%" ng-blur="updateScout(scout)" class="ng-pristine ng-valid"></textarea>
+			</tr>
+		</table>
+		</div>
+	</div>
